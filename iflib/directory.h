@@ -8,6 +8,7 @@
  * Written by stefan@space.s-link.de (Stefan Westerfeld)
  */
 
+#include <sys/types.h>
 #include <dirent.h>
 
 #ifdef DONT_HAVE_DIRENT

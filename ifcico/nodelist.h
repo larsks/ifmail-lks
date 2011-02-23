@@ -3,7 +3,7 @@
 
 #include "ftn.h"
 
-#define MAXUFLAGS 8
+#define MAXUFLAGS 16
 
 typedef struct _node {
 	faddr addr;

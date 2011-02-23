@@ -207,7 +207,7 @@ faddr *addr;
 	debug(20,"getnlent: phone	%s",nodebuf.phone);
 	debug(20,"getnlent: speed	%u",nodebuf.speed);
 	debug(20,"getnlent: flags	0x%lx",nodebuf.flags);
-	for (j=0;nodebuf.uflags[j];j++)
+	for (j=0; (j < MAXUFLAGS) && nodebuf.uflags[j];j++)
 		debug(20,"getnlent: uflag	%s",nodebuf.uflags[j]);
 
 	return &nodebuf;
