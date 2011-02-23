@@ -1,0 +1,60 @@
+From: millar@cix.compulink.co.uk (Matt Millar)
+Subject: Re: Ftn MSGID's
+Date: 9 Oct 1994 12:52:31 -0500
+Message-Id: <memo.570823@cix.compulink.co.uk>
+Author-Reply-To: millar@cix.compulink.co.uk
+To: ifmail@fidogate.nuars.nwu.edu (Ifmail mailing list)
+Reply-To: ifmail@fidogate.nuars.nwu.edu (Ifmail mailing list)
+Precedence: bulk
+Status: RO
+
+In-Reply-To: <m0qrigV-0006P3C@pccross.msk.su> from "Eugene Crosser" at Oct 3, 94 04:20:38 am
+
+I have come up with some mods for cnews to allow ftn MSGID's to be created,
+whilst still retaining internet from addressing.  Make the following mods
+bin/inject/anne.jones
+
+--------------------------------------------
+# This should already exist
+if test -r $NEWSCTL/mailname; then
+ mailname="`tr -d ' \11' <$NEWSCTL/mailname`"
+else
+ mailname="`newshostname`"
+ case "$mailname" in
+ *.*) ;;   # not a uucp host name
+ *) mailname="$mailname.uucp" ;; # probably a uucp host name
+ esac
+fi
+# End of the existing part
+# Add this after the above
+if test -r $NEWSCTL/ftnname; then
+ ftnname="`tr -d ' \11' <$NEWSCTL/ftnname`"
+else
+ ftnname=$mailname
+fi
+# End of the new part
+-------------------------------------------------
+
+Then to the end of anne.jones look for this:
+
+-------------------------------------------------
+awk -f $NEWSBIN/inject/defhdrs.awk defpath="$badsites$USER" deffrom="$FROM" \
+ deforg="$deforg" defdate="$defdate" defexpiry="$expiry" \
+ defmsgid="`set $date; echo \<$6$2$3.\`  echo $4 | tr -d : \`.$$@$ftnname\>`" \
+ me="`newshostname`" $tmp
+-------------------------------------------------
+
+In the the line beginning " defmsgid" ends with "`.$$@$host\>`" It should be
+"`.$$@$ftnname" as above.  Then create a file "ftnname" in your
+/usr/local/lib/news or equivalent, with the internet style fido address in,
+for example
+
+p26.f325.n250.z2.fidonet.org
+
+This should generate Message-ID:'s with the ftn address.
+
+Works for me at least!
+-- 
+Matthew.Millar@p26.f325.n2052.z2.fidonet.org
+millar@cix.compulink.co.uk
+

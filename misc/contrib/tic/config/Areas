@@ -1,0 +1,50 @@
+#
+# Areas File
+#
+#
+#    Tag		Group	Dir					Own	Group	Mode	Posting
+# Description (leading spaces removed)
+Area NODEDIFF	F		/pub/fido/nodelist	x	fido 	0640	None
+	FidoNet Weekly Nodediffs
+Area AV241		F		/pub/virus			x	adm		0644	Local
+	Antivirus Software
+Area PNOF		P		/pub/pnof			x	pnof	0640	Local
+	PNoF Nodelists and info
+Area 24000		F		/pub/fido/24000		x	adm		0644	None
+	Region 24000 Pointlist/diffs
+Area FIDONEWS	F		/pub/fido			x	adm		0644	None
+	Your weekly Fidonews newsletter
+Area X11		F		/pub/X11			x	adm		0644	Local
+	Generic X11 software
+Area CYBER		F		/pub/cyber			x	adm		0644	Local
+	About hacking, phreaking, etcetera
+Area DEVELOP	F		/pub/develop		x	adm		0644	Local
+	Software and sources for developers
+Area FAQ		F		/pub/doc/faq		x	adm		0644	Local
+	Frequently Asked Questions
+Area GNU_DIST	F		/pub/gnu/dist		x	adm		0644	Local
+	GNU distributions
+Area GNU_MSDOS	F		/pub/gnu/ports/msdos x	adm		0644	Local
+	GNU MS-DOS ports
+Area GRAPHICS	F		/pub/graphic		x	adm		0644	Local
+	Graphics tools
+Area CUTCP		F		/pub/msdos/cutcp	x	adm		0644	Local
+	Columbia University TCP/IP for MessyDos
+Area UNIX		F		/pub/unix			x	adm		0644	Local
+	Unix software
+Area VMS		F		/pub/vms			x	adm		0644	Local
+	VMS software
+Area LINUX		L		/pub/linux			x	adm		0644	Local
+	Linux general
+Area LX_KERN	L		/pub/linux/kernel	x	adm		0644	Local
+	Linux Kernel sources
+Area LX_TEXT	L		/pub/linux/textfiles x	adm		0644	Local
+	Linux Textfiles
+Area LX_X11		L		/pub/linux/X11		x	adm		0644	Local
+	Linux X11 Specific things.
+Area LX_APP		L		/pub/linux/applications x adm	0644	Local
+	Linux Applications
+Area LX_COMM	L		/pub/linux/communications x adm	0644	Local
+	Linux Communications
+Area LX_SLACK	L		/pub/linux/slack	x	adm		0644	Local
+	Linux selected files from Slackware distributions. (Currently 1.1.0)

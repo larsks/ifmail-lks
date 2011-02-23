@@ -1,0 +1,137 @@
+# Contributed by Christoph Lameter <clameter@netcom.com>
+
+# The provided sendmail config file does not canonicise the .fidonet.org names
+# and therefore messages end up being send into the UUCP domain instead of
+# Fidonet. I include some parts of sendmail.cf for reference. It contains also some
+# examples for routing.
+
+######################################################################
+######################################################################
+#####
+#####		SENDMAIL CONFIGURATION FILE
+#####
+[...]
+
+##################
+#   local info   #
+##################
+
+Cwlocalhost	waterf	waterf.uucp	p1.n961.n102.z1.fidonet.org
+#Important: Lists all aliases of your system!
+[...]
+
+######################################################################
+######################################################################
+#####
+#####			REWRITING RULES
+#####
+######################################################################
+######################################################################
+
+
+###########################################
+###  Rulset 3 -- Name Canonicalization  ###
+###########################################
+S3
+
+[...]
+
+################################################
+###  Ruleset 96 -- bottom half of ruleset 3  ###
+################################################
+
+#  At this point, everything should be in a "local_part<@domain>extra" format.
+S96
+
+# handle special cases for local names
+R$* < @ localhost > $*		$: $1 < @ $j . > $2		no domain at all
+R$* < @ localhost . $m > $*	$: $1 < @ $j . > $2		local domain
+R$* < @ localhost . UUCP > $*	$: $1 < @ $j . > $2		.UUCP domain
+R$* < @ [ $+ ] > $*		$: $1 < @@ [ $2 ] > $3		mark [a.b.c.d]
+R$* < @@ $=w > $*		$: $1 < @ $j . > $3		self-literal
+R$* < @@ $+ > $*		$@ $1 < @ $2 > $3		canon IP addr
+
+# if really UUCP, handle it immediately
+
+# try UUCP traffic as a local address
+R$* < @ $+ . UUCP > $*		$: $1 < @ $[ $2 $] . UUCP . > $3
+R$* < @ $+ . . UUCP . > $*		$@ $1 < @ $2 . > $3
+
+# pass to name server to make hostname canonical
+R$* < @ $* $~P > $*		$: $1 < @ $[ $2 $3 $] > $4
+
+# local host aliases and pseudo-domains are always canonical
+R$* < @ $=w > $*		$: $1 < @ $2 . > $3
+R$* < @ $* $=P > $*		$: $1 < @ $2 $3 . > $4
+R$* < @ $* . . > $*		$1 < @ $2 . > $3
+
+# if this is the local hostname, make sure we treat is as canonical
+R$* < @ $j > $*			$: $1 < @ $j . > $2
+
+# Insert this: if this is fidonet take it as canonized
+R$+ < @ $+ . fidonet . org > $*		$@ $1 < @ $2 . fidonet . org . > $3
+R$+ < @ $+ . fidonet > $*		$@ $1 < @ $2 . fidonet . org . > $3
+R$+ < @ $+ . fido > $*			$@ $1 < @ $2 . fidonet . org . > $3
+
+##################################################
+###  Ruleset 4 -- Final Output Post-rewriting  ###
+##################################################
+S4
+
+[...]
+
+######################################
+###   Ruleset 0 -- Parse Address   ###
+######################################
+
+S0
+
+[...]
+
+# forward other UUCP traffic straight to UUCP
+R$* < @ $+ .UUCP. > $*		$#uucp $@ $2 $: $1 < @ $2 .UUCP. > $3	user@host.UUCP
+
+
+#You must define your Fidonet routing here:
+# Routing for my Boss is always direct
+R$* < @ $* f961 . n102 . z1 . fidonet . org . > $*
+		$#fido $@ f961.n102 $: $1 < @ $2 f961.n102.z1.fidonet.org > $3 
+
+# Brian gets all my other direct mailings since he is a hub and a local call.
+R$* < @ $+ . fidonet . org . > $*	$#fido $@ f851.n102 $: $1 < @ $2 . fidonet . org > $3
+#                 ^^^
+# this dot may be important because of name server behavior
+
+# pass names that still have a host to a smarthost (if defined)
+R$* < @ $* > $*		$: $>95 < $S > $1 < @ $2 > $3	glue on smarthost name
+
+######################################################################
+######################################################################
+#####
+#####			MAILER DEFINITIONS
+#####
+######################################################################
+######################################################################
+
+[...]
+
+#####################################
+###   FIDO Mailer specification   ###
+#####################################
+
+Mfido, P=/usr/lib/ifmail/ifmail, F=msDFMuC, S=11, R=21, A=ifmail -r $h $u
+#"-r $h" is required as ifmail requires packet routing address.
+
+#####################################
+###   UUCP Mailer specification   ###
+#####################################
+
+[...]
+----- End sendmail.cf -----
+
+I hope this helps a bit. I do not have any logs like you suggested in a
+response to my problems. I hate handling huge amounts of output for nothing.
+So forgive me if I have fixed my problems on my own.
+
+Christoph
+

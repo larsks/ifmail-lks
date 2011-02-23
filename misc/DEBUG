@@ -1,0 +1,29 @@
+#	bit	description
+#
+#	0	output regardless of verbose value
+a	1	outbound object names
+b	2	system calls: exec(), mkdir(), popen() etc.
+c	3	creating and filling packet, file attaches
+d	4	uucp locking
+e	5	reading packet/messages
+f	6	AKA matching, address substitution
+g	7	scanning outbound
+h	8	address lists processing (seen-by, path, etc.)
+i	9	AREAS/newsgroups processing
+j	10	session flow, handshaking
+k	11	file transfer protocols
+l	12	file lists, requests and attaches
+m	13	logical expression parser
+n	14	finite state machine (entry/exit)
+o	15	finite state machine (every state)
+p	16	parsing confuguration
+q	17	parsing RFC headers
+r	18	I/O (less verbose)
+s	19	I/O (max. verbose)
+t	20	nodelist processing (less verbose)
+u	21	nodelist processing (max. verbose)
+v	22
+w	23
+x	24
+y	25
+z	26

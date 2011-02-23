@@ -1,0 +1,30 @@
+#
+# UNIX TICK-processor (u-tic) feed list
+#
+# The file consists of feed records.
+# The first line of the record is feed's address. It must start
+# at the beginning of a line.
+# Other lines of the record are the feed's subscription list.
+# They must have a space or tab as the first character.
+# Each line contains one area name. The name may contain wildcard
+# characters "*" and "?". If it starts with "!"  the name after "!"
+# is used to exclude areas _from_the_list_above_the_name_, i.e.
+# if there is a record
+#
+# 6:66/66.66
+#	*
+#	!*PIC*
+#	PICSYSOP*
+#	!PICSYSOP.NUDE
+#
+# 6:66/66.66 will be subscribed to all FEs except those which contain "PIC"
+# in their name except PICSYSOP* that will be included in its subscription list,
+# but PICSYSOP.NUDE will not.
+# 
+#
+2:5020/118.118
+	!*
+#
+2:5020/208
+	PNTLIST
+	FOOBAZ

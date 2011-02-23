@@ -1,0 +1,193 @@
+
+#   
+# readtick.pli	- 	Read Tick file into memory, perform sanity checks
+#
+#   readtick.pli,v 1.2 1994/04/21 18:51:02 cg Exp
+#
+#   Filebase - filebase management for Unix systems
+#   Copyright (C) 1994	Cees de Groot
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#   
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+#   You can contact the author
+#   by SnailMail:	Cees de Groot
+#			Ortsstrasse 1a
+#			88718 Daisendorf
+#			Germany
+#   by Phone:            +49 7532 5131
+#   by InternetMail:     de_groot@decus.decus.de
+#   on his Box:          +49 7532 2532 (14k4/V42bis)
+#
+#
+
+#
+# This subroutine reads the named tickfile, and performs some
+# sanity checks on it - among others, it calls a CRC calculator
+# Returns true or false, and leaves the contents in %FileContents.
+#
+# &ReadTickFile(TickFileName);
+#	-> false:
+#		$ReadTickError has reason.
+#	-> true:
+#		$FileContents has Tick data. AreaDir (among others) has the
+#		Destination Directory. Several Arrays contain tags that mey
+#		occur multiply: @FileDesc, @FileLDesc, @FilePath, @FileSeenby.
+#
+#
+sub ReadTickFile {
+	local($TicFile) = @_;
+
+	#
+	# Reset those. Otherwise, they'll occur multiple times
+	#
+	undef @FileDesc;
+	undef @FileLDesc;
+	undef @FilePath;
+	undef @FileSeenby;
+
+	open(CurTic, $TicFile);
+	while (<CurTic>) {
+		chop;
+		chop;	# Twice ! These are DOS CR/LF files !
+		($Key, $Value) = split(/ /, $_, 2);
+
+		TestKey: {
+			#
+			# Special Processing for the keywords that may appear more
+			# than once
+			#
+			if ($Key =~ /^Desc/) {
+				$FileDesc[$#FileDesc + 1] = $Value;
+				last TestKey;
+			}
+			if ($Key =~ /^LDesc/) {
+				$FileDesc[$#FileLDesc + 1] = $Value;
+				last TestKey;
+			}
+			if ($Key =~ /^Path/) {
+				$FilePath[$#FilePath + 1] = $Value;
+				last TestKey;
+			}
+			if ($Key =~ /^Seenby/) {
+				$FileSeenby[$#FileSeenby + 1] = $Value;
+				last TestKey;
+			}
+			#
+			# Special Processing for exceptions we saw
+			#
+			if ($Key =~ /^CRC/) {
+				$FileContents{'Crc'} = $Value;
+				last TestKey;
+			}
+			#
+			# Default:
+			#
+			$FileContents{$Key} = $Value;
+		}
+	}
+	close(CurTic);
+	print "Area = ", $FileContents{'Area'}, "\n";
+	print "PW   = ", $FileContents{'Pw'}, "\n";
+	print "From = ", $FileContents{'From'}, "\n";
+	print "Dest = ", $FileContents{'Dest'}, "\n";
+	print "Desc = ", @FileDesc, "\n";
+	print "File = ", $FileContents{'File'}, "\n";
+	
+	#
+	# Check the file. If it doesn't exist, translate to lowercase
+	# and retry
+	#
+	if (! -e $FileContents{'File'}) {
+		$FileContents{'File'} =~ y/A-Z/a-z/;
+		if (! -e $FileContents{'File'}) {
+			$ReadTickFileError = "Can't find associated file";
+			return 0;
+		}
+	}
+	
+	#
+	# Get the data for the Originating node and the Area
+	#
+	dbmopen(Areas,"$ConfigDir/$AreaFileName", 0644);
+	($AreaGroup, $AreaDir, $AreaFOwn, $AreaFGroup, $AreaFMode, 
+	 $AreaPosting, $AreaDesc) = 
+		split(/:/, $Areas{$FileContents{'Area'}});
+	dbmclose(Areas);
+
+	dbmopen(Nodes, "$ConfigDir/$NodeFileName", 0644);
+	($NodePW, $NodeGroups, $Junk) = 
+		split(/:/, $Nodes{$FileContents{'From'}});
+	dbmclose(Nodes);
+
+	print "NodeGroups = ", $NodeGroups, "\n";
+	#print "NodePW     = ", $NodePW, "\n";
+	print "AreaGroup  = ", $AreaGroup, "\n";
+	print "AreaDir    = ", $AreaDir, "\n";
+	
+	#
+	# Check various thingies
+	#
+	if ($AreaGroup =~ /^$/) {
+		$ReadTickError = "Area not found";
+		return 0;
+	}
+	if ($NodePW =~ /^$/) {
+		$ReadTickError = "Node unknown";
+		return 0;
+	}
+	if ($FileContents{'Pw'} ne $NodePW) {
+		$ReadTickError = "Password doesn't match!";
+		return 0;
+	}
+	if ($NodeGroups !~ $AreaGroup) {
+		$ReadTickError = "Node can't send for this area!";
+		return 0;
+	}
+	if (! -d $AreaDir) {
+		$ReadTickError = "Can't find target directory";
+		return 0;
+	}
+	if (! -w $AreaDir) {
+		$ReadTickError = "Target directory isn't writable";
+		return 0;
+	}
+
+	#
+	# OK. Passed most sanity checks, now get a CRC for the thing.
+	#
+	open(CALCCRC, "crc32 <$FileContents{'File'}|");
+	$CalcCrc = <CALCCRC>;
+	close(CALCCRC);
+	if ($CalcCrc != $FileContents{'Crc'}) {
+		$ReadTickError = "Incorrect CRC";
+		return 0;
+	};
+
+	return 1;
+}
+
+1;
+
+#
+# readtick.pli,v
+# Revision 1.2  1994/04/21  18:51:02  cg
+# This one works for me - I activated all `unsafe' statements, and it
+# processes LinuxNet; that's the primary goal, of course ;-)
+#
+# Revision 1.1  1994/03/19  16:34:52  cg
+# Filebase first version that functions more or less. More a 'backup'
+# commit than a real release...
+#
+#

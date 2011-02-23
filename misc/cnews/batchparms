@@ -1,0 +1,21 @@
+# site		size	queue	builder	muncher		sender
+# ----		----	-----	-------	-------		------
+/default/	65535	32	batcher	compcun		viauux
+#
+# FidoNet gateway (ifmail)
+# you should have either a link to ifmail progfam in $NEWSBIN/batch
+# or have a script there calling ifmail with appropriate parameters.
+# You may omit "-n" key if the program name is "ifnews" and you can
+# omit -r<nodeaddress> key if $NEWSSITE environment variable is set.
+# ifmail (ifnews) must run setuid owner of fidonet directories
+#
+f6.n5020	32767	8	batcher	nocomp		ifnews
+f103.n5020	32767	8	batcher	nocomp		ifnews
+#
+# According to Urko Lusa <ulusa@arrakis.es>:
+# For newer version of cnews, you may want to put something like this:
+#
+#f103.n5020	f	32767	8	batcher	| ifnews -r f103.n5020
+#
+# and run "sendbatches -c f" to pack echoes for all your Fido feeds
+# if you have more than one.

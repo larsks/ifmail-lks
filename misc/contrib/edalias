@@ -1,0 +1,51 @@
+#!/usr/bin/perl
+
+$dbm="/var/spool/ifmail/ifdbm";
+
+$|=1;
+dbmopen(ifdbm,"$dbm",0666);
+while(1) {
+	print "Freename (Ctrl-D to quit):";
+	$key=<STDIN>;
+	last if ("$key" eq "");
+	chop($key);
+	if ($val=$ifdbm{$key}) {
+		print "Found: \"$key\"->\"$val\"\n";
+		print "Action ([C]change address, [D]elete, [N]ew name):";
+		$action=<STDIN>;
+		last if ("$action" eq "");
+		chop($action);
+		if ($action =~ /^[Cc]/) {
+			print "New address:";
+			$new=<STDIN>;
+			last if ("$new" eq "");
+			chop($new);
+			$ifdbm{$key}=$new;
+		} elsif ($action =~ /^[Dd]/) {
+			print "Really delete \"$key\"? [Y]/[N]:";
+			$new=<STDIN>;
+			last if ("$new" eq "");
+			chop($new);
+			if ($new =~ /^[Yy]/) {
+				delete $ifdbm{$key};
+				print "deleted \"$key\"\n";
+			} else {
+				print "Deletion cancelled\n";
+			}
+		} elsif ($action =~ /^[Nn]/) {
+			print "New name:";
+			$new=<STDIN>;
+			last if ("$new" eq "");
+			chop($new);
+			if ($ifdbm{$new}) {
+				print "There is already \"$new\"\n";
+			} else {
+				$ifdbm{$new}=$val;
+			}
+		}
+	} else {
+		print "Not found\n";
+	}
+}
+dbmclose(ifdbm);
+print "\nBye.\n";

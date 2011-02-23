@@ -1,0 +1,52 @@
+From crosser Sat May 15 18:33:19 1993 remote from pccross
+Received: by pccross.msk.su (Smail3.1.28.1 #5)
+	id m0nuNIZ-0001frC; Sat, 15 May 93 18:33 MSD
+Received: by nowhere.msk.su (Smail3.1.28.1 #5)
+	id m0nuNIZ-0001frC; Sat, 14 May 93 18:33 MSD
+X-Message-Id: <May-17-1993.02.32.45.123324@pccross.msk.su>
+Message-Id: <123456%May-17-1993.02.32.45.123324@pccross.msk.su>
+Return-Receipt-To: crosser@pccross.msk.su
+X-From: crosser@pccross.msk.su (Eugene Crosser)
+From: (UberWhacker) <(UberWhacker)@p666.f666.n666.z6.fidonet.org>
+Subject: Это тест: насчет первых русских буковок в subject...
+X-Subject: UNIX-SOURCE/IFMAIL24.TAR.Z
+X-FTN-FLAGS: ATT CRS DIR
+Priority: low
+To: Pete.Kvitek@f6.fido.pccross.msk.su
+X-To: Pete.Kvitek@f6.n5020.z2.fidonet.org
+Date: Mon, 17 May 1993 02:33:14 +0400 (MSD)
+X-Mailer: ELM [version 2.4 PL17]
+Organization: == Eugene Crosser's ==
+MIME-Version: 1.0
+Content-Type: text/plain; charset=KOI-8
+Content-Transfer-Encoding: 8bit
+Content-Length: 23        
+
+Hello Pete,
+please could you examine this message thoroughly and send me 
+the results.
+
+I am testing another new piece of fidonet/internet gateway software
+
+--- ifmail-2.8f/iflib/bwrite.c	Sun Oct  9 00:33:09 1994
++++ ifmail2-current/iflib/bwrite.c	Mon Oct 28 13:06:01 1996
+@@ -32,11 +32,16 @@
+ 	return 0;
+ }
+ 
+-/* write an arbitrary line to message body: change \n to \r\n */
++/* write an arbitrary line to message body: change \n to \r,
++   if a line starts with three dashes, insert a dash and a blank */
+ int cwrite(s,fp)
+ char *s;
+ FILE *fp;
+ {
++	if ((strlen(s) >= 3) && (strncmp(s,"---",3) == 0) && (s[3] != '-')) {
++		putc('-',fp);
++		putc(' ',fp);
++	}
+ 	while (*s) 
+ 	{
+ 		if (*s == '\n') putc('\r',fp);
+Thanx,
+Eugene

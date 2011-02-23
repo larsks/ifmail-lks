@@ -1,0 +1,36 @@
+   1. Subscribing/unsubscribing
+
++<Echo name pattern>
+ Subscribe to all echoes that match the pattern
+
+-<Echo name pattern>
+ Unsubscribe from all echoes that match the pattern
+
+%+<Newsgroup name pattern>
+ Subscribe to echoes by their corresponding newsgroup names
+
+%-<Newsgroup name pattern>
+ Unsubscribe from echoes by their corresponding newsgroup names
+
+You may use '*' symbol in the patterns.
+
+   3. Areafix control/info commands
+
+1) %HELP - get this message :)
+
+2) %LIST - get the list of echoes present on our node
+
+3) %WIDE - force areafix to send wide-format lists on %LIST, %QUERY
+	   and %UNLINKED commands. It means that you will get not
+	   only echo names and descriptions, but also corresponding
+	   newsgroup names (useful for %+ and %- commands)
+
+4) %QUERY - get your subscription list
+
+5) %UNLINKED - get the list of echoes that youa are NOT subscribed to
+
+6) %PASSIVE - make your subscription passive. It means that you will
+	      receive no echoes until you send %ACTIVE command, but 
+	      you do not loose your subscription list on our node
+
+7) %ACTIVE - make your subscription active. You will get echoes again

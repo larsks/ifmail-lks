@@ -1,0 +1,15 @@
+# Gateway to FidoNet (ifmail)
+
+f49.n5020\
+	:alt.fan.tolkien,rec.arts.books.tolkien,rec.games.frp.dnd\
+	:Tf,Wfb,B4096/1024:
+
+f155.n5020/f35.n5020\
+	:fido7.spb.efl,fido7.spb.exchange\
+	:Tf,Wfb,B4096/1024:
+
+# if you are on another network, say, "othernet" with zone 69:
+
+f88.n77.z69.othernet/f88.n77\
+	:othernet.sysop,comp.sys.ibmpc\
+	:Tf,Wfb,B4096/1024:

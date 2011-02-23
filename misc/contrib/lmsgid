@@ -1,0 +1,7 @@
+#!/usr/bin/perl
+
+dbmopen(ifdbm,"msgidb",0666);
+while(($key,$val)=each %ifdbm) {
+	print $key, ' = ', $val, "\n";
+}
+dbmclose(ifdbm);

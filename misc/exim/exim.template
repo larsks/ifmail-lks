@@ -1,0 +1,27 @@
+ifmail:
+  driver = pipe
+  user = ifmail
+  command = "/usr/local/lib/ifmail/ifmail -r$host ${domain}"
+
+         in the routers section:
+
+fidonet:
+  transport = ifmail
+  driver = domainlist
+  route_file = /etc/exim/ftnpaths
+  search_type = partial-lsearch*
+
+         example ftnpaths:
+
+# My direct links (points included)
+*.f20.n5020.z2.fidonet.org:      f20.n5020.z2.fidonet.org
+*.f2025.n5020.z2.fidonet.org:    f2025.n5020.z2.fidonet.org
+*.f0.n5020.z2.fidonet.org:       f0.n5020.z2.fidonet.org
+*.f79.n5020.z2.fidonet.org:      f79.n5020.z2.fidonet.org
+*.p8.f510.n5020.z2.fidonet.org:   p8.f510.n5020.z2.fidonet.org
+*.p666.f510.n5020.z2.fidonet.org:  p666.f510.n5020.z2.fidonet.org
+*.f510.n5020.z2.fidonet.org:   f510.n5020.z2.fidonet.org
+# This is default routing:
+*.fidonet.org:                   f400.n5020.z2.fidonet.org
+
+

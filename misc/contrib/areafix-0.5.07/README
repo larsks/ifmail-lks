@@ -1,0 +1,53 @@
+	Area Manager for ifgate+INN (areafix)
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+I. MISCELLANEOUS RUBBISH BY AUTHORS
+
+Area Manager is a program that plays the role of the Areafix robot
+of standard MS-DOS FTN packages in a system using ifgate and INN
+for internet news and FidoNet echoes processing.
+It handles links' requests for subscribing/unsubscribing to/from
+echoes by translating echo names to newsgroup names using ifmail's
+Areas file and modifying INN's newsfeeds file. Usual %LIST,
+%QUERY, %UNLINKED, %PASSIVE and %ACTIVE commands are also recognized
+and processed in a proper way.
+
+II. INSTALLATION
+
+To install areafix:
+
+1) compile and link areaqueue.c. Read the comments in it.
+
+2) add aliases for areafix and "areafix's name" (see 'config')
+to your MTA config. Example for sendmail's /etc/aliases:
+
+areafix: |/usr/lib/ifmail/areafix/areaqueue " " /var/spool/ifmail/areafix
+areafix-service: sysop
+
+We assume that areaqueue program resides in /usr/lib/ifmail/areafix,
+request queue will is to be placed in /var/spool/ifmail/areafix and
+replys to angry areafix's messages are to be forwarded to user "sysop"
+of your system.
+
+3) Edit 'config', 'restricted' and 'passwords'  files.
+Read comments while editing.
+
+4) Edit /etc/syslog.conf according to log facility chosen
+Example:
+
+local1.*		/var/log/ifmail/areafix
+
+and create the log file if your syslogd wouldn't create it
+(e.g. in BSDI 1.1).
+
+5) Add a proper line to your crontab in ordrer to run areafix.pl
+sometimes. Supply the full name of 'config' file as the 1st
+parameter.
+
+III. THE END
+
+All comments and suggestions send to yar@comp.chem.msu.su
+or to Yar Tikhiy, 2:5020/118.
+
+(C) 1994		Alex Tutubalin, 2:5020/96
+(C) 1994,1995,1996	Andrew Kolchoogin & Alexey Kshnyakin, 2:5020/118
+(C) 1996,1997		Yar Tikhiy,  2:5020/118

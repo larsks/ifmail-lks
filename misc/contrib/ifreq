@@ -1,0 +1,94 @@
+#!/usr/bin/perl
+$ver = "0.4";
+#
+# this perl script is designed for the ifmail package by eugene grosser.
+#
+# request a file (first argument) from a fido-node (second argument),
+# don't forget to quote if you use wildcards, e.g.:
+
+#      ifreq 'files*' 2:2410/305
+# or
+#      ifreq 'files newfile' 2:2410/305
+#
+# this perl script does only add an entry to the corresponding flo-file,
+# the mailer ifcico is not started!
+#
+# rasca, berlin 1994 (rasca@marie.physik.tu-berlin.de, 2:2410/305.4)
+#
+# multi-zone support added by
+# Roland Rosenfeld 15.05.1994 (roland@p13.flokiste.fido.de, 2:2450/300.13)
+
+# ifcico-config-file:
+$config = "/usr/local/lib/fnet/config";
+
+# change this to the default node, where requests should go to.
+$node = "2:2410/305";
+
+# this is the base directory, where the req-files are stored and the
+# default outbound
+$flo_path = "/var/spool/fnet";
+$outbound = "/out"; # don't be confused, it means "/var/spool/fnet/out"
+
+# end of configuration #############################################
+
+# main()
+#
+if ((@ARGV < 1) || @ARGV > 2 || $ARGV[0] eq "-?") {
+    &usage;
+} elsif ($ARGV[1] ne "") {
+    $node = $ARGV[1];
+}
+$file = $ARGV[0];
+
+if (! ($node =~ /\d+:\d+\/\d+/)) {
+    die "Wrong address: $node!!!";
+}
+
+($zone, $netnode) = split (/:/, $node);
+$reqfile = sprintf("%04x%04x", split(/\//, $netnode));
+
+if ($reqfile eq "00000000") {
+    print ("can't resolve the fido address \"$node\"\n");
+    &usage;
+} else {
+    if ( $zone == 2 ) {
+        $reqfile = $flo_path . $outbound . "/" . $reqfile . ".req";
+    } elsif ( $zone < 7 ) {
+        $reqfile = $flo_path . $outbound . ".00$zone/" . $reqfile . ".req";
+    } else {
+        $outbound = "";
+        open (CONFIG, "< $config") || die "can't open $config";
+        while ($_ = <CONFIG>) {
+            if ( /^address.*$zone:.*\@(\w*)/ ) { $outbound = $1; }
+        }
+        if ( $outbound eq "" ) {
+            die "No Zone $zone found in $config";
+        }
+        $reqfile = $flo_path . "/$outbound/" . $reqfile . ".req";
+    }
+
+    # seperate the file names of the first argument
+    @files = split (/\s+/, $ARGV[0]);
+
+    # open the flofile for appending
+    open(FLOFILE, ">>" . $reqfile) || die "can't open $reqfile";
+        while (@files) {
+            print (FLOFILE shift(@files), "\n");
+        }
+    close(FLOFILE);
+
+    print ("--- fido request $ver ---------------------------\n");
+    print ("requesting \"$file\" from fido-node $node\n");
+    print ("--- executing ifstat .. ------------------------\n");
+    system("ifstat");
+}
+
+#
+# subroutine "usage"
+#
+sub usage {
+    printf ("--- fido request %s -------------\n", $ver);
+    printf ("usage: ifreq <file> [<3-d address>]\n");
+    printf ("e.g. : ifreq FILES 2:2410/305\n");
+    exit 1;
+}

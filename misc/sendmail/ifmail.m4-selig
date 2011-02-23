@@ -1,0 +1,151 @@
+# Return-Path: srcc!gw!valley.muc.de!mas
+# Received: from srcc by pccross.msk.su with uucp
+# 	(Smail3.1.29.1 #2) id m0sHcLG-0006TbC; Fri, 2 Jun 95 23:25 MSD
+# Received: by gamma.srcc.msu.su; Fri,  2 Jun 1995 21:15:21 +0400
+# Received: from colin.muc.de (root@colin.muc.de [193.174.4.1]) by gw.srcc.msu.su (8.6.12/8.6.12) with SMTP id VAA09890 for <crosser@pccross.msk.su>; Fri, 2 Jun 1995 21:13:38 +0400
+# Received: from valley by colin.muc.de with UUCP id <25613-2>; Fri, 2 Jun 1995 19:13:19 +0200
+# Received: (from mas@localhost) by valley.muc.de (8.6.12/8.6.12) id RAA13876 for crosser@pccross.msk.su; Fri, 2 Jun 1995 17:16:53 +0200
+# From: "Marc A. Selig" <mas@valley.muc.de>
+# Message-Id: <199506021516.RAA13876@valley.muc.de>
+# Subject: ifmail 2.8c and sendmail 8.6.12
+# To: crosser@pccross.msk.su
+# Date: Fri, 2 Jun 1995 17:16:42 +0200
+# X-Mailer: ELM [version 2.4 PL23]
+# Content-Type: text
+# Content-Length: 5260      
+# 
+# Hello!
+# 
+# I have been a content user of your ifmail package for about
+# a year now. Except for two TIMEOUTs that lasted for several
+# hours, I have never experienced any serious trouble with it
+# and recommend the package to anyone asking me on how to go
+# about installing a FTN package under Linux. Many thanks for
+# the really good work you have done!
+# 
+# 
+# However, when installing sendmail on my system some days ago,
+# I had to do some figuring out to make the package work again.
+# The reason for this is that, although you did include some
+# help on how to install ifmail with sendmail in the contrib
+# directory, the instructions given there are meant for direct
+# modification of /etc/sendmail.cf, which is, IMHO, a Bad Thing
+# To Do with the new sendmail versions that are much easier
+# configured using m4 macros.
+# 
+# Well, I finally found my way around the beast :) and managed
+# to make ifmail work with sendmail configured via m4. Maybe
+# you want to include the necessary files in the distribution
+# of ifmail so others will be spared the few hours I (as a non-
+# expert on sendmail) had to spend on this. Anyway, here they
+# are:
+# 
+# 
+# This has to go in file "cf/mailer/fido.m4". I do not know
+# about licensing information and Trouble With The Law :),
+# so I simply included the corresponding section from the
+# other mailer drivers.
+# -------------------------
+PUSHDIVERT(-1)
+#
+# Copyright (c) 1983 Eric P. Allman
+# Copyright (c) 1988, 1993
+#       The Regents of the University of California.  All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 3. All advertising materials mentioning features or use of this software
+#    must display the following acknowledgement:
+#       This product includes software developed by the University of
+#       California, Berkeley and its contributors.
+# 4. Neither the name of the University nor the names of its contributors
+#    may be used to endorse or promote products derived from this software
+#    without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+# OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+# SUCH DAMAGE.
+#
+
+ifdef(`IFMAIL_MAILER_PATH',,
+        `define(`IFMAIL_MAILER_PATH', /usr/lib/ifmail/ifmail)')
+POPDIVERT
+#####################################
+###   FIDO Mailer specification   ###
+#####################################
+
+VERSIONID(`@(#)ifmail.m4        0.0 (Marc A. Selig) 5/25/95')
+
+Mfido,          P=IFMAIL_MAILER_PATH, F=msDFMuC, S=11, R=21,
+                A=ifmail -r $h $u
+# "-r $h" is required as ifmail requires packet routing address.
+-------------------------
+
+
+This has to be added to "cf/cf/<your-sitename>.mc":
+-------------------------
+MAILER(fido)
+
+[...]
+
+# Add all your host names here.
+Cwlocalhost valley valley.muc.de f902.n106.z142.sfnet
+
+[...]
+
+
+LOCAL_RULE_3
+# if this is fidonet take it as canonized
+# note: insert any domains here that should be passed to ifmail!
+R$+ < @ $+ . fidonet . org > $*         $@ $1 < @ $2 . fidonet . org . > $3
+R$+ < @ $+ . fidonet > $*               $@ $1 < @ $2 . fidonet . org . > $3
+R$+ < @ $+ . sfnet . org > $*           $@ $1 < @ $2 . sfnet . > $3
+R$+ < @ $+ . sfnet > $*                 $@ $1 < @ $2 . sfnet . > $3
+
+
+LOCAL_RULE_0
+# Rewrite local addresses so they get sent to user@my.f.q.d.n instead of
+# being routed through the FTN. (Replace f902.n106.z142 by your FTN address.)
+# I had to do this since everything would be routed to my FTN boss without it.
+# Maybe I'm just plain stupid, but this works at least.
+# You can insert more than one of these if you have more addresses.
+R$* < @ f902 . n106 . z142 . sfnet . > $*
+                $#local $: $1
+
+## Routing for 1:102/961 is always direct
+## This is an untested example.
+#R$* < @ $* f961 . n102 . z1 . fidonet . org . > $*
+#               $#fido $@ f961.n102 $: $1 < @ $2 f961.n102.z1.fidonet.org > $3
+
+# Everything else gets sent to 142:106/900
+# (Replace this by your boss.)
+R$* < @ $+ . sfnet . > $*
+                $#fido $@ f900.n106.z142 $: $1 < @ $2 . sfnet > $3
+
+# -------------------------
+# 
+# 
+# Hope this might help somebody. And I hope it is not too wrong. :)
+# Well, at least it seems to work on my system, and it does not care
+# about whether the rest of your connections are via uucp or smtp or
+# whatever.
+# 
+# cu
+#    Marc
+# 
+# -- 
+# mselig@sun1.cip.fak14.uni-muenchen.de     phone ++49-8745-1535

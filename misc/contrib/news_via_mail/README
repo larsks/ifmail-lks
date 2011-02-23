@@ -1,0 +1,28 @@
+How to read/post news without news installed:
+
+1) edit user name into news2mail.awk and boss address into
+   mail2news.sh. Check programs path also.
+
+2) copy news2mail.awk to /usr/local/etc/ifmail/news2mail.awk
+   and mail2news.sh to /usr/local/bin/mail2news.
+
+3) change in your config file:
+   rnews           /usr/bin/awk -f /usr/local/etc/ifmail/news2mail.awk
+
+4) create empty news spool (for ifunpack space check), usually
+   /usr/spool/news or /var/news
+
+Now you able to read news via your usual mailreader.
+
+4) To post/reply article specify:
+   To: |mail2news
+   in message header via your mail agent
+   (assuming that /usr/local/bin present in your PATH).
+
+						Yours, Ache.
+-- 
+Andrew A. Chernov        : And I rest so composedly,  /Now, in my bed,
+ache@astral.msk.su       : That any beholder  /Might fancy me dead -
+FidoNet: 2:5020/230.3    : Might start at beholding me,  /Thinking me dead.
+RELCOM Team,FreeBSD Team :         E.A.Poe         From "For Annie" 1849
+

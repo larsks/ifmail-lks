@@ -1,0 +1,14 @@
+#!/usr/bin/perl
+
+dbmopen(ifdbm,"ifdbm",0666);
+
+open(alias,"/usr/lib/ifmail/Alias") || die "Cannot open alias file";
+while(<alias>) {
+	unless (/^#/) {
+		/([^ ]*) *(.*) *$/;
+		print $1, "--", $2, "\n";
+		$ifdbm{$2} = $1;
+	}
+}
+
+dbmclose(ifdbm);

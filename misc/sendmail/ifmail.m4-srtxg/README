@@ -1,0 +1,110 @@
+Hello,
+
+In order to facilitate the configuration of sendmail I made a little
+m4 script, it replaces the ugly SENDMAIL.sh :)
+It needs fnet.m4 that is included in last tx and that goes in 
+ ..../sendmail-cf/mailer/ while the ifmail.mc goes in ..../sendmail-cf/cf/
+
+You have to configure a few lines in ifmail.mc then do
+
+m4 ifmail.mc > /etc/sendmail.cf
+
+and you have a good sendmail.cf
+
+You need the m4 macros for sendmail (come whith the sendmail sources, 
+or you can have sendmail-cf.blabla.rpm; sure other distrib schemes have 
+their equivalent packages too)
+
+NOTES:
+* it adds anti-spam support (add email/domains to block in /etc/sendmail.rej)
+* it assumess you use *.fidonet.org domain for fidonet and *.ftn for othernets
+
+What is configurable ?
+
+Only these lines :
+
+define(`LOCAL_LOGIN_NAME',      ``emartine'')
+define(`SMART_HOST',            ``[smtp.your.provider.com]'')
+define(`FIDO_HOST_ADDRESS',     ``f15.n2.z3.fidonet.org'')
+define(`FIDO_SMART_HOST',       ``f1.n2.z3.fidonet.org'')
+define(`FIDO_GATEWAY',          ``f4.n5.z6.fidonet.org'')
+define(`ISP_LOGIN_NAME',        ``emart002'')
+define(`ISP_MAIL_DOMAIN',       ``provider.com'')
+define(`USE_FGATE')
+
+LOCAL_LOGIN_NAME defines your local login in your linux box.
+SMART_HOST defines your ISP smart host, that is the machine you sent
+        email to. That is a machine accessible by smtp (when you
+        connect t othe internet throug PPP do "sendmail -q" and it
+        delivers the mail). enclose the name whith [ ] if you are not 
+        connected 24h/24h, otherwise problems will happen.
+FIDO_HOST_ADDRESS is *your* fido address (can be a point address of course)
+FIDO_SMART_HOST your fido uplink address, that is where you send pkt to.
+FIDO_GATEWAY the fidonet -> internet gateway nearest to you
+ISP_LOGIN_NAME your ISP login name, if you have an email address
+ISP_MAIL_DOMAIN what is after the "@" of your email address if one
+USE_FGATE this one is a little different. If you have *NO* internet
+        connectivity at all, that is if you rely on the fidonet gateway,
+        put this line:
+
+define(`USE_FGATE')
+
+        however, if you can connect to the internet to send to a smart host
+        put this one instead :
+
+undefine(`USE_FGATE')
+
+That's all for a simple setup ! run (m4 ifmail.mc > /etc/sendmail.cf)
+
+Don't forget to put in /etc/sendmail.cw the list of all your machine local
+addresses (either uucp name if one, fidonet, other FTN,...).
+Exemple I have :
+
+# sendmail.cw - include all aliases for your machine here.
+chanae.stben.be
+linux.chanae.stben.be
+f2219.n293.z2.fidonet.org
+p29.f1.n850.z4.fidonet.org
+f4120.n320.z101.francom.ftn
+
+If you are connected to other FTN networks or if you want some routing other
+than trough FIDO_SMART_HOST and/or SMART_HOST edit the file /etc/mailertable
+to add some special routings, using the syntax :
+
+domain          transport:trough.system
+
+ex:
+
+f2219.n293.z2.fidonet.org       fnet:f2219.n293.z2.fidonet.org
+
+sends direct to 2:293/2219 trough fnet. NOTE: points aren't handled, for
+that you will also need:
+
+.f2219.n293.z2.fidonet.org      fnet:f2219.n293.z2.fidonet.org
+
+note the leading dot !
+
+For *your* points put (assming you are f15.n2.z3.fidonet.org) :
+
+.f15.n2.z3.fidonet.org          fnet:%1.f15.n2.z3.fidonet.org
+
+(again note the leading dot, and the %1)
+
+for othernets is the same, ex:
+
+.maxwellnet.ftn                 fnet:f12.n34.z555.maxwellnet.ftn
+
+and for other transports too:
+
+.some.uucp                      uucp-dom:barney
+.some.smtp                      smtp:[local.networked.machine]
+
+each time you modify /etc/mailertable you need to recompile it running:
+
+makemap hash /etc/mailertable.db < /etc/mailertable
+
+
+-- 
+
+A bientôt,
+Pablo Saratxaga

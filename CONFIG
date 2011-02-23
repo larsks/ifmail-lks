@@ -1,0 +1,296 @@
+# Compile-time configuration for ifmail FidoNet mailer and gateway
+COPYRIGHT   = "Eugene G. Crosser, 1993-1998"
+VERSION     = "2.15"
+
+# Main configuration file. This default may be overwritten by -I key.
+CONFIGFILE  = "/etc/ifmail/config"
+
+# Debug messages turned on by -x key are written here.
+# Some error messages may occationally appear here too.
+# This may be changed in the 'config' file.
+DEBUGFILE   = "/var/log/ifmail/ifdebug"
+
+# Procession log. Usually gets several lines for each invocation.
+# Also look for error diagnostics here.  If HAS_SYSLOG defined,
+# only stdout and stderr from the packers and unpackers go to this
+# file, while actual logging is done via syslog() calls.
+# This may be changed in the 'config' file.
+LOGFILE     = "/var/log/ifmail/iflog"
+
+# Use syslog() facility codes for mail gate, news gate and ifcico.
+# Define -DHAS_SYSLOG (see below)
+#MAILLOG    = LOG_MAIL
+MAILLOG    = LOG_LOCAL0
+#NEWSLOG    = LOG_NEWS
+NEWSLOG    = LOG_LOCAL0
+#CICOLOG    = LOG_UUCP
+CICOLOG    = LOG_LOCAL0
+
+# Directory where UUCP lock files reside.
+#LOCKDIR     = "/var/spool/uucp"
+LOCKDIR     = "/var/lock"
+
+# Directory from which file requests are resolved.
+# This may be changed from the 'config' file.
+#PUBDIR      = "/home/ftp/pub"
+PUBDIR      = "/var/spool/uucppublic"
+
+# News spool directory (to check space only)
+#NEWSSPOOL   = "/usr/spool/news"
+NEWSSPOOL   = "/var/spool/news"
+
+# Compile-time system-dependant options. 
+
+# If you specify "-DHAS_NDBM_H", ndbm calls will be used instead
+# of dbm ones, and the feature will be activated of Cnews log processing
+# to add entries to SEEN-BY if echo message is exported to several FTN
+# nodes by Cnews mechanism. This works with INN too.
+
+# If you specify "-DHAS_STATFS" or "-DHAS_STATVFS", statfs() (or statvfs()
+# respectivly) call will be used to check available disk space. For statfs()
+# call, you must also specify which .h file to use: "-DSTATFS_IN_VFS_H" or 
+# "-DSTATFS_IN_STATFS_H" or "-DSTATFS_IN_STATVFS_H"  or "-DSTATFS_IN_MOUNT_H". 
+# For statvfs() call, statvfs.h is included.
+
+# define -DSCO_STYLE_STATFS if your statfs() call requires 4 arguments.
+
+# If you specify "-DHAS_SETSID", setsid() call is used to detach from the
+# control terminal. Otherwise setpgrp() call is used, and in this case you
+# may specify "-DBSD_SETPGRP" to use BSD-style call.  Used in ifcico only.
+
+# If you specify "-DDONT_HAVE_TM_GMTOFF", timezone offset will be calculated
+# from the difference between the results of localtime() and gmtime() calls
+# instead of using tm_gmtoff field of struct tm.
+
+# If you specify "-DDONT_HAVE_GETOPT", local definitions for getopt will
+# be used (but not the function itself)
+
+# For ifcico, you must specify -DHAS_TERMIOS_H (preffered), -DHAS_TERMIO_H
+# or -DHAS_SGTTY_H to use POSIX-y, SysV-ish of BSD-ish terminal control.
+
+# in SVR4 you should specify -DHAS_DIAL (and maybe -DHAS_DIAL_H) to use
+# dial() library function instead of regular open().  Lock files are
+# not used in this case.
+
+# for uucp lock files, you must specify either -DASCII_LOCKFILES or
+# -DBINARY_LOCKFILES
+
+# define -DHAS_FSYNC if there is a fsync() system call (to update .flo
+# files)
+
+# define -DPARANOID if you want iftoss to deny packets with wrong password.
+
+# define -DRELAXED if you want iftoss to accept packets that are not
+# addressed to your node.
+
+# define -DFORCEINTL if you want ifmail to create ^aINTL even if this is
+# not an inter-zone netmail.
+
+# define -DNEED_UUCPFROM if your MTA needs a uucp "From" line in mail.
+
+# define -DHAS_TCP if you want ifmail to be able to originate outgoing
+# connections over TCP/IP (socket library needed)
+
+# define -DHAS_TERM if you want ifmail to be able to originate outgoing
+# connections over TERM (TCP "extention", client.a needed)
+
+# define -DHAS_REGEX_H or -DHAS_LIBGEN_H if you have either of these
+# header files for regular expression handlers.
+
+# define -DHAS_SYSLOG to use syslog() instead of logging to files.
+# Files are necessary anyway, external programs' stdout and stderr
+# are redirected there.
+
+# define -DNEED_BSY if you want ifpack and ifcico to create .bsy
+# files preventing simultaneous processing of the same node.
+# This is *not* necessary, ifcico will work without such locking.
+
+# define -DNEED_FORK if your system is uncapable of getting rid of the
+# control terminal unless you are running not as a group leader.
+
+# as of June 1994, FreeBSD has a nasty bug in the kernel lseek() code:
+# if you make lseek() to a point before the start of the file, it
+# succeeds and the writing point becomes negative.  Fortunately, 
+# subsequent write()s fail :-).  To overwork this, define 
+# -DNEGATIVE_SEEK_BUG, this will add an extra fseek() to restore
+# zero writing point where necessary.
+
+# define -DNEED_TRAP if you want debugging information when the programs
+# are aborted with segmentation fault etc.  Currently tested and works 
+# only with Linux, and only with kernels >= 1.1.20.  If the kernel version
+# is prior to 2.1, add also -DPRE_21_LINUX
+
+# define -DSLAVE_SENDS_NAK_TOO if you have problems answering incoming
+# EMSI sessions originated by FrontDoor.  FrontDoor does not follow
+# EMSI specifications when originating calls, this is a workaround.
+
+# define -DBELEIVE_ZFIN=1 if you cannot get files sent by Terminate.
+# Original Zmodem source does not beleive first ZFIN packet when
+# receiving file, and sends more than one ZFIN while sending.  But
+# it seems that Terminate Zmodem only send one ZFIN.  I could not
+# check this myself.  If not defined, BELEIVE_ZFIN will be assumed
+# 2, that is, skip 1st ZFIN but acknowledge second.
+
+# define -DDONT_HAVE_DIRENT if there is no working opendir()/readdir()
+# etc. in your libc.  You will also need to add "dirent.o" to the NEEDED
+# (see below).
+
+# define -DHAS_BSD_SIGNALS if your SIGALRM does not interrupt system
+# calls by default.  Note that this also needed on Linux with glibc2
+# (libc6.x.x)
+
+# define -DDONT_HAVE_DBMCLOSE if your dbm implementation does not have
+# dbmclose() / dbm_close() function.
+
+# define -DHAS_BSD_DB if you have BSD `db' package instead of usual
+# [nsg]dbm.  We use ndbm compatibility interface of `db', so you also
+# need to specify -DHAS_NDBM_H.  `ndbm compatibility' interface of BSD
+# db is not fully ndbm compatible, this is a workaround.
+
+# specify -DINT32=<type> which type corresponds to 32bit and
+# -DINT16=<type> - which type corresponds to 16bit integer on your
+# system, usually "-DINT32=long -DINT16=short"
+
+# Linux/x86:  (remove -DHAS_BSD_SIGNALS if you have libc5 (not glibc2))
+OPTS        = -DHAS_STATFS -DSTATFS_IN_VFS_H -DHAS_SETSID -DHAS_NDBM_H \
+		-DDONT_HAVE_TM_GMTOFF -DHAS_TERMIOS_H -DASCII_LOCKFILES \
+		-DHAS_FSYNC -DHAS_IOCTL_H -DHAS_REGEX_H -DHAS_TCP \
+		-DFORCEINTL -DHAS_SYSLOG -DNEED_UUCPFROM -DNEED_BSY \
+		-DSLAVE_SENDS_NAK_TOO -DNEED_FORK -DHAS_BSD_SIGNALS \
+		-DHAS_BSD_DB -DINT32=long -DINT16=short
+
+# 386BSD:
+#OPTS        = -DHAS_STATFS -DSTATFS_IN_MOUNT_H -DHAS_SETSID -DHAS_NDBM_H \
+#		-DHAS_TERMIOS_H -DASCII_LOCKFILES -DHAS_FSYNC -DHAS_IOCTL_H \
+#		-DHAS_REGEX_H -DHAS_TCP -DHAS_SYSLOG -DNEED_UUCPFROM \
+#		-DNEED_BSY -DNEED_FORK -DNEGATIVE_SEEK_BUG \
+#		-DHAS_SYS_ERRLIST -DHAS_BSD_SIGNALS \
+#		-DINT32=long -DINT16=short
+
+# SVR4:
+#OPTS        = -DHAS_STATVFS -DDONT_HAVE_TM_GMTOFF -DHAS_SETSID -DHAS_NDBM_H \
+#		-DHAS_TERMIOS_H -DHAS_DIAL -DHAS_DIAL_H -DASCII_LOCKFILES \
+#		-DHAS_FSYNC -DHAS_IOCTL_H -DHAS_LIBGEN_H -DHAS_TCP \
+#		-DHAS_SYSLOG -DINT32=long -DINT16=short
+
+# SunOS:
+#OPTS        = -DHAS_STATFS -DSTATFS_IN_VFS_H -DHAS_SETSID -DHAS_NDBM_H \
+#		-DDONT_HAVE_GETOPT -DHAS_TERMIOS_H -DASCII_LOCKFILES \
+#		-DHAS_FSYNC -DHAS_TCP -DHAS_SYSLOG \
+#		-DINT32=long -DINT16=short
+# Solaris 2.x:
+#OPTS        = -DHAS_STATVFS -DHAS_SETSID -DHAS_NDBM_H \
+#		-DDONT_HAVE_TM_GMTOFF -DDONT_HAVE_GETOPT -DHAS_TERMIOS_H \
+#		-DASCII_LOCKFILES -DHAS_FSYNC -DHAS_TCP -DHAS_SYSLOG \
+#		-DINT32=long -DINT16=short
+
+# SCO Unix 3.2v4.2
+#OPTS        = -DHAS_STATFS -DSTATFS_IN_STATFS_H -DSCO_STYLE_STATFS \
+#		-DHAS_TERMIOS_H -DDONT_HAVE_TM_GMTOFF -DDO_NEED_TIME \
+#		-DDONT_HAVE_GETOPT -DASCII_LOCKFILES -DHAS_IOCTL_H \
+#		-DHAS_TCP -DHAS_SYSLOG \
+#		-DINT32=long -DINT16=short
+
+# ISC Unix 3.2 v3.0
+#OPTS        = -DHAS_STATFS -DSTATFS_IN_STATFS_H -DHAS_TERMIO_H \
+#		-DDONT_HAVE_TM_GMTOFF -DDONT_HAVE_GETOPT \
+#		-DASCII_LOCKFILES -DHAS_IOCTL_H -DSCO_STYLE_STATFS \
+#		-DUSE_POLL -DHAS_NET_ERRNO_H -DSHORT_PID_T \
+#		-DHAS_TCP -DHAS_SYSLOG \
+#		-DINT32=long -DINT16=short
+# On ISC, if you are suing gcc, you can run into a trouble with sscanf()
+# function.  It appears that sscanf(string,"%d.%d",&int1,&int2) where
+# string is a constant segfaults unless you specify "-fwritable-strings"
+# to gcc.  I would say that this is a bug in ISC libc.  If nessecary,
+# add this to the defines above.  If you have ISC version 4.0 or later,
+# you can add "-posix", remove "-DSHORT_PID_T" and specify "-DHAS_TERMIOS"
+# to get benefit of posix terminal control.
+
+# NeXTSTEP
+#OPTS         = -DHAS_STATFS -DSTATFS_IN_VFS_H -DHAS_SETSID \
+#		-DHAS_TERMIOS_H -DASCII_LOCKFILES -DHAS_FSYNC -DHAS_IOCTL_H \
+#		-DHAS_REGEX_H -DHAS_SYSLOG -DNEED_UUCPFROM \
+#		-DNEED_BSY -DNEED_FORK -DNEGATIVE_SEEK_BUG \
+#		-DDONT_HAVE_GETOPT -DINT32=long
+#		-DINT16=short
+
+# Digital UNIX 3.2 (formerly OSF/1)
+#OPTS         = -DHAS_NDBM_H -DHAS_STATVFS -DHAS_SETSID -DNEED_FORK \
+#		-DHAS_TERMIOS_H -DASCII_LOCKFILES -DHAS_FSYNC -DHAS_SYSLOG \
+#		-DHAS_REGEX_H -DDONT_HAVE_GETOPT \
+#		-DPARANOID -DRELAXED -DFORCEINTL -DNEED_UUCPFROM -DHAS_TCP \
+#		-DNEED_BSY -DSLAVE_SENDS_NAK_TOO -DINT32=int -DINT16=short
+
+# for make install, where to put binaries and what owner to set
+BINDIR = /usr/lib/ifmail
+OWNER = ifmail
+GROUP = uucp
+MODE = 0711
+SMODE = 4711
+
+INSTALL = install
+RANLIB = ranlib
+#RANLIB = touch
+SHELL = /bin/sh
+ECHO = echo -e
+CC = gcc
+#YACC = bison -y
+YACC = yacc
+#LEX = flex
+LEX = lex
+AWK = awk
+TAR = tar
+
+#CFLAGS = -g -Wall
+# Linux, 386BSD, SunOS:
+CFLAGS = -g -O2 -Wall
+# SVR4:
+#CFLAGS = -O -Xa
+# NeXTSTEP
+#CFLAGS = -O2 -Wall -posix -g
+#LDFLAGS =  -g -L/usr/gnu/lib -nostartfiles /lib/posixcrt0.o
+# DgUX
+#CFLAGS= -migrate -O5 -ifo -g0
+#LDFLAGS = -s
+
+LDFLAGS =
+
+# For LIBS, you may need to add "-lfl" if you are using flex 2.4.x
+# If you need TERM also add e.g. "/usr/src/term112/client.a"
+
+# Linux w/libc5
+#LIBS = -lgdbm
+# Linux w/glibc
+LIBS = -lndbm
+# SunOS:
+#LIBS =
+# Solaris:
+#LIBS = -lgdbm -lsocket -lnsl
+# 386BSD:
+#LIBS = -lgdbm -lcompat
+# SVR4
+#LIBS = -ldbm -lform -lnsl -lsocket -lc -L/usr/ucblib -lucb
+# SCO
+#LIBS = -ldbm -lsocket -lintl
+# ISC
+#LIBS = -lcposix -lmalloc -ldbm -linet -lPW
+# NeXTSTEP
+#LIBS = -lgdbm -lposix
+
+INCLUDES = -I${INCDIR}
+# ISC
+#INCLUDES = -I/usr/include/rpcsvc -I${INCDIR}
+
+# What programs are absent at your system?
+#NEEDED = strcasestr.o strncasecmp.o strcasecmp.o rename.o mkdir.o usleep.o \
+#		regexpr.o strerror.o
+# Linux
+NEEDED =
+# SVR4
+#NEEDED = regexpr.o
+# SCO
+#NEEDED = strcasestr.o strncasecmp.o strcasecmp.o usleep.o regexpr.o
+# SunOS and 386BSD
+#NEEDED = signal.o
+# ISC
+#NEEDED = usleep.o regexpr.o vsyslog.o

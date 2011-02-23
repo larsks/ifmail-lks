@@ -1,0 +1,128 @@
+The History of the AreaManager for INN+ifmail (it's short name - areafix :)
+
+==== v0.00, ??-??-9?
+
+	It was written by Alex Tutubalin (2:5020/96) in Perl for MS-DOS
+(so many later versions contained "#chop #MSDOG" :).
+Alex wrote to Sergey Vishnevskiy (2:5020/400): "I've learned
+a new language and wrote an area manager while having been learning it".
+
+==== v0.01, april'95
+
+	The first operational alpha-version.
+Andrew Kolchoogin (was 2:5020/118.22) was made by Alexey Kshnyakin
+(2:5020/118) to learn Perl for a week, and then they made the
+areafix work :)
+
+==== v0.02, may-june'95
+
+	The first operational version :)
+Andrew Kolchoogin and Alexey Kshnyakin made it from v0.01
+just before Alexey's graduating.
+
+==== v0.10, december'95 - february'96
+
+	Yar Tikhiy (2:5020/118) became the next developer :)
+
+1) Areafix was divided into 2 parts: a little program that places
+requests in a queue and a queue processor.
+2) "+*" is processed correctly now.
+3) The list of restricted echoes is handled properly, too.
+4) The names of echoes containing metacharacters are handled in a correct way.
+5) The list of restricted echoes affects both + and - commands.
+6) "Forward" config parameter was added.
+
+=== v0.11, march'96
+
+	It's the version included into ifmail-2.8e package.
+
+1) Areafix logs using syslogd (implemented by Andrew Kolchoogin)
+
+=== v0.5.00, may'96
+
+	Yar Tikhiy began a new version numbering. 0.5 means
+"half-release". It's time to finish messing with the areafix.
+
+1) It knows about INN's "default subscription list" feature
+(default subscription is '*') and writes '!*' in newsfeeds
+if detects empty subscription list.
+
+2) Areafix has to use ifmail's Areas file as the list of areas,
+in which newsgroups are gated, so the lines in Areas containing
+'*' in area or newsgroup name are rejected (previous version
+would have subscribed you to something like 'junk.*' if you
+had asked '+*')
+
+3) 'XlatCommand' config parameter has been added. Now you
+have ability to tell areafix to translate some users' commands
+to other ones. See also 4).
+
+4) '%+' and '%-' command have been added. There is almost no
+use of them for users, but they can be used in 'XlatCommand'.
+Imagine that some areafix user (i.e. link) sends '+*' to it.
+Obviously he wants to get full feed of FidoNet echoes and has
+absolutely no desire to receive gated usenet shit. So it would
+be the right thing to add the 'XlatCommand +* %+fido7.*' line
+to areafix's config file.
+
+5) Now you can tell areafix to restrict an echo for a set of
+links by specifying a wildmat(3)-style address pattern. See
+also the 'restricted' file.
+
+6) Areafix forwards subscription requests to uplink in a
+single letter. Previous versions would have sent a letter per
+each nonexistent area.
+
+7) Comments and README are now in bad English :)
+
+=== v0.5.01, may'96
+
+1) Areafix knows about Reply-To: RFC-822 message header line now.
+2) It saves messages w/bad header in $QUEUE/bad directory.
+3) It sends a correct list on %UNLINKED command.
+4) It sends a sorted list on %LIST and %UNLINKED commands.
+
+=== v0.5.02, may'96
+
+1) 'quote_meta' subroutine quotes all metacharacters. Previous version
+have quoted only those metacharacters which I had found in echo and
+group names, but now it's getting popular to include weird characters
+in the names of new echoes.
+
+=== v0.5.03, june'96
+
+1) Because of the subscription algorithm, the subscription to '*'
+durated 2 days on 2:5020/400.
+So, the algorithm changed to make subscribing to a lot of echoes
+much faster (about 300 times).
+
+=== v0.5.04, august'96
+
+1) Now areafix can handle not only FTN links but also NNTP and UUCP ones.
+The trouble was that all newsgroup names passed check for their presence
+in ifmail's Areas file. Two types of links are introduced now, namely,
+FTN and non-FTN. FTN links can see only newsgroups being gated (i.e.
+present in the Areas), and non-FTN links see all active newsgroups.
+Of course, they can't reference ungated newsgroups by echotag, but only
+by newsgroup name.
+Futhermore, you can turn off FTN features at all.
+See 'config', 'restricted' and 'passwords' files' comments for
+more technical details.
+
+2) A bug in list generating functions fixed. Now they output only
+active echoes but not all of them from ifmail's Areas.
+
+3) A bug in unsubscribe_from_ngroup() that made it non-functional fixed.
+
+4) A little bug in areaqueue.c fixed.
+
+Thanx to Nick Evgenev for giving the idea for fixes #1 and #2.
+
+=== v.0.5.05
+=== v.0.5.06
+
+1) Little bug fixes
+
+=== v.0.5.07
+
+1) Areafix uses gup3w-compatible lock file now

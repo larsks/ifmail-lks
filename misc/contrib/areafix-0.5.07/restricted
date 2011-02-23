@@ -1,0 +1,11 @@
+# File of restricted echoes - your links can not subscribe to them
+# and unsubscribe from them.
+# Format:
+# <Echo or group wildmat(3)-style pattern> [Address wildmat(3)-style pattern]
+# The default address pattern is '*'
+#
+*COORD*	
+N5020.HUBS			*
+N5020.SYSOP			p*.*
+118.PVT				*
+comp.*				*

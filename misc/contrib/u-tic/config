@@ -1,0 +1,151 @@
+#
+# UNIX TICK-processor (u-tic) configuration file
+#
+
+#
+# Your FIDONet address
+#
+Address			2:5020/118@fidonet
+
+#
+# Domains<->zones table
+#
+Domain		fidonet.org	fidonet		1
+Domain		fidonet.org	fidonet		2
+Domain		fidonet.org	fidonet		3
+Domain		fidonet.org	fidonet		4
+Domain		fidonet.org	fidonet		5
+Domain		fidonet.org	fidonet		6
+
+#
+# Paths section. Use FULL paths please.
+#
+# Binkley-style outbound directory for your zone
+#
+Outbound		outb
+
+#
+# Inbound directory
+#
+Inbound			inb
+
+#
+# Fileecho outbound - the directory in which u-tic places files for links
+# Because of the restrictions of hard links mechanism must be on the same
+# FS where your inbound resides
+#
+FE_outbound		feoutb
+
+#
+# The list of active areas at your node
+#
+Areas			areas
+
+#
+# The list of fileechoes w/descriptions. Can be obtained from
+# officical package of FE lists.
+#
+FE_List			felist
+
+#
+# The list of your feeds
+#
+Feeds			feeds
+
+#
+# The list of links' passwords.
+#
+Passwd			passwd
+
+#
+# The list of restricted areas
+#
+Restricted		restricted
+
+#
+# The directory where to place miscellaneous semaphores
+#
+Semaphore		/tmp
+
+#
+# Sequencer file. Seems to be Ifmail sequencer file compatible.
+#
+Sequencer		useq
+
+#
+# The directory for your filebase. If commented out a filebase is
+# not created.
+# It must be on the same filesystem with your inbound directory
+# It is of alpha quality, so use it on your own risk.
+#
+#Filebase		filebase
+Filebase		fb
+
+#
+# The queue of messages for filefix
+#
+Queue			queue
+
+#
+# The command for sending mail.
+# "|prog" - pipe to 'prog'
+# ">file" - write to 'file'
+# ">>file" - append to 'file'
+#
+#Mail_Command		|/usr/sbin/sendmail -t
+Mail_Command		>outmail
+
+#
+# The command for announcing new files to the world
+#
+#Announce_Command	|/news/bin/inews -S -t "New files" -n fido7.local.400.files
+Announce_Command	>outnews
+
+#
+# The table for converting Desc's to your encoding
+#
+Intab			outaltkoi8
+
+#
+# The file to be sent on %HELP command
+#
+Help			help
+
+#
+# External utility that prints to stdout the CRC32 of its stdin
+#
+CRC_utility		./crc
+
+#
+# Inbound and outbound statistics files. Comment out to disable
+#
+Instat			instat
+Outstat			outstat
+
+#
+# Miscellaneous parameters section
+#
+# Flavor for ?LO's made by u-tic. Can be "h","f" or "c".
+#
+Flavor			h
+
+#
+# Umask for files being created by u-tic
+#
+Umask			022
+
+#
+# Mode which the files in your filebase are chmoded to
+#
+FileBase_Mode		644
+
+#
+# Syslog facility that will be used by u-tic in your system 
+# See syslog.conf(5)
+#
+Log_Facility		local2
+
+#
+# The default description for new files in filebase if Desc field is absent
+#
+Default_Description	No description

@@ -1,0 +1,7 @@
+#!/usr/bin/perl
+
+dbmopen(ifdbm,"ifdbm",0666);
+while(($key,$val)=each %ifdbm) {
+	print $key, ' = ', $val, "\n";
+}
+dbmclose(ifdbm);

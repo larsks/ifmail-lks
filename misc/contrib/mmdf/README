@@ -1,0 +1,73 @@
+		FIDO<->Internet GATE on MMDF System
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+			<C> Vitaly Lev
+			V1.0 Betta.
+
+
+Some functions for this programm give from utlib.a
+utlib.a - libriry from ifmail by Eugene Crosser.
+
+This is example of fidonet chanel for MMDF delivering system.
+this chanel will give full gate uucp<->fidonet.
+
+in file mmdftailor write:
+
+;
+; FIDO Configuration info
+;
+MTBL fchn, file="fidonet.chn", show="FIDO Channel"
+MCHN fidonet, show="FIDO Delivery", pgm=fidonet, tbl=fchn, mod=imm, auth=outlog,
+	level=FST, ap=822
+
+---
+in file root.dom will write
+
+fidonet.org:	fidonet
+
+---
+will create patch: /usr/spool/mmdf/lock/home/q.fidonet
+
+---
+Will create file /usr/mmdf/table/fidonet.chn
+
+In file fidonet.chn will write:
+
+fidonet:	%s
+---
+
+In file fidonet.c write Your FIDO NET Address & path to route config file.
+run make.
+in dir /usr/mmdf/chans write file fidonet
+
+-----
+Next, run /usr/mmdf/table/dbmbuild
+
+-----
+in config ifmail file write:
+
+sendmail /usr/lib/mail/execmail
+
+----
+Example of route file:
+
+462/40	462/40.*
+462/60	462/60.*
+462/80	462/80.* 462/70.* 462/30.* 462/*
+463/61	*/*
+
+---------------------------------------------
+
+Vitaly Lev,
+2:462/10@fidonet.org
+vitaly@ccrd.lviv.ua
+
+
+
+
+
+
+
+
+
+

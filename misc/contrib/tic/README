@@ -1,0 +1,135 @@
+/home/repository/mine/tic/README,v 1.1 1994/03/19 16:34:42 cg Exp
+
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#   
+
+This is LT, The Linux Tic Processor.
+====================================
+And let's call it version 0.1beta. Just for reference.
+
+Intro
+-----
+Being a very early release, it is written almost exclusively in Perl. I did
+this for several reasons:
+- You can prototype and develop *much* faster with Perl than with C. I wrote
+  the first version in one evening!
+- I wanted to learn Perl ;-)
+
+Here is what it does now:
+- It reads incoming .tic files, and checks them. For the check to be complete,
+  a program crc32 must be in the PATH (I included the C-source). This is the
+  only part written in C (actually, I didn't even write it, I just stole it
+  from /linux/zBoot/misc.c, which was stolen from gzip ;-));
+- It moves the associated file in it's Area-directory, and plays with the
+  modes and ownership as it was told to do. This is a neat feature for
+  sensitive data. It also updates a file '.files.bbs' in the target 
+  directory;
+- It looks which nodes are in the area list, compares it with the seenby's,
+  and puts every node which didn't see the file on the outbound;
+- Then, it starts creating .tic and .flo files.
+Basically, most things that you need *badly*.
+
+Here is what it doesn't do (yet):
+- Stuff like Pre-releases and Replaces. Never got any, ergo no priority;
+- Although the configuration file is there, the quick hack version currently
+  doesn't support multiple processors. The idea is to be flexible enough to
+  send out .tic files through every known medium (but let's start on FTN, 
+  then do UUCP, then the rest of the universe ;-));
+- Dupe-processing and the likes. See 'Pre-releases';
+- Make pretty reports. Top of the list - haven't got the time yet. Should
+  be a matter of hours to implement it, though.
+- Do it's work fast. See below.
+
+Here is below:
+- I also released this in perl, because I think it is easier for many persons
+  to make quick hacks on. Of course, the first >= 1.0a release will be in
+  C - I'll start translating in C as soon as I think that the functionality
+  is stable**. In the mean time, I hope lots of patches will arrive...;
+- After that, I'll change IFmail and Waffle UUCP in order to use a magic
+  filebase for filerequests. I'm still looking for ideas here, especially
+  how to handle protection/privileges.
+
+** This is only valid when the performance is below standards. Otherwise,
+I'd be happy to leave the stuff in perl... Let's see how it develops
+
+Baseline: use it, hack at it, and mail any ideas back to me. I don't want
+to write a simple .Tic-processor (I already done that, you're reading the
+readme now <g>), I want to expand it into a full-fledged filebase manager 
+(Anybody know a database package with the GNU license on it ?).
+
+Installing
+----------
+make crc32, and put it in something like /usr/local/bin. That should be
+easy enough. Besides, it is a handy thing to have around. Better than
+good ol' sum, anyway.
+
+Put the perl-files somewhere. Files ending with .pl are executable scripts,
+files ending with .pli are required include files - all should reside in the
+same dir, while the main scripts try to load them from there. Set
+mode to executable for all .pl files, if they got munched in the distribution.
+
+Edit the configuration files. I put a template set into .../config, you
+can put them anywhere you like, as long as you change .../config/Config
+and config.pli accordingly. I don't think that such limited configuration
+files for such a limited program need further explanation for people who
+got Linux (and presumable IFmail or Fidogate) running :-).
+
+When you're happy with the configuration files, compile them into their
+dbm equivalents with makeconfig.pl. I won't start discussions about this:
+I think it's the best of two worlds - easy readable files to edit for you,
+and fast access for the program.
+
+The hard part is editing the templates. Take a close look at my example,
+and at the source code (poster.pl). Then, you're on your own.
+
+Using
+-----
+Call process_tics, as an appropriately privileged person, and wait.
+
+Todo
+----
+Apart from the 'What it doesn't do' list:
+
+- More error handling. It currently trusts the filesystem too much...
+- Multiple inbounds in order to support /var/spool/uucppublic and
+  other incoming stuff. The idea is to generate dummy tics for incoming
+  files (a small program and a template should do it), so you can process
+  them with the package.
+- Aka-Matching. Sigh.
+
+License
+-------
+As the file COPYING would almost double the distribution, I left it out.
+Nevertheless, the GNU license applies. I wrote this stuff for Linux 
+(although it will run on other Unixes too), so I expect everyone to have
+a license lying around.
+
+The Author
+----------
+You can contact me in several ways. I'll list them in order of my preference,
+but won't flame you if you don't pick the first:
+
+FidoNet:	Cees de Groot%241:10000/1512	2:2/241
+  (this is a zonegate address. Put name and %... in the Name field, and
+  2:2/241 in the Node field. Don't worry, it works).
+Mailbox:	+49 7532 2532	(14k4/v.42bis)
+InterNet:	de_groot@decus.decus.de
+Phone:		+49 7532 5131	(evenings, I'm GMT-1)
+Snail:		Ortstrasse 1a
+			88718 Daisendorf
+			Germany
+
+Famous Last Words
+-----------------
+Have fun, and please send me feedback! Thanks to the standard bunch of
+persons: Linus, Larry, Eugene, Brian & Dennis ;-)
+

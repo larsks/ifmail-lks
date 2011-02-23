@@ -1,0 +1,11 @@
+# This is a sample "magic" file request processor
+
+echo Dear $1!
+echo ""
+echo This is what you asked
+echo ""
+ls -lL /usr/spool/uucppublic
+echo ""
+echo Report produced in responce to $*
+echo ""
+echo Thank you for using ifcico.

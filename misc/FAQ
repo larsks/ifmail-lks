@@ -1,0 +1,216 @@
+Q: Is there any documentation for ifgate and ifcico?
+A: No, sorry.  Only README files and example configuration file.  And
+   this FAQ list, of course.
+
+Q: Will ifcico work in multiline environment?
+A: Hopefully yes, though the mechanism of skipping locked files is
+   not well tested.
+
+Q: How do I create a nodelist?
+A: You need not.  Take a fresh nodelist from a nearby FidoNet node.
+
+Q: How do I compile the nodelist?
+A: With ifindex program.  You also need to keep the original nodelists.
+
+Q: How do I compile a nodediff?
+A: With nlpatch program.
+
+Q: The diffs to getty_ps do not fit, and besides that, ifcico cannot
+   originate call while uugetty is active on the dialin line.  Any ideas?
+A: Take getty_ps version later than 2.0.7c, versions prior to 2.0.7b are
+   unusable.
+
+Q: When I start ifcico without parameters, it displays banner and does
+   noting.  Ctrl-C, Ctrl-\ etc. do not help.  What's on?
+A: This is correct behavior in slave mode.  To make outgoing calls, start
+   it with "-r1" parameter.  If you unintentionally started it in slave
+   mode, just wait several minutes, and it will finish.
+
+Q: Do directories in config file need ending "/" ?
+A: No.  But it won't do any harm.
+
+Q: How do I create an alias in the database?
+A: You need not.  It is created automatically as mail goes from Internet
+   to FidoNet.
+
+Q: In fact, I think I did not understood at all what alias (ifdbm) is for.
+   When do you built it ? When do you use it ?
+A: When a message from "jsmith@some.where.net (John Smith)" passes from
+   Internet to Fidonet, fidonetters see the message from "John Smith of
+   your:fido/addr".  When fidonetters make replies, their replies go to
+   "John Smith of your:fido/addr".  To forward the message to the correct
+   Internet address, ifmail needs to remember that "John Smith" is actually
+   "jsmith@some.where.net".  That's why the database is needed.  When
+   messages pass from Internet to Fidonet, it is filled, and when replies
+   come from Fidonet, it is used to forward them to Internet.
+
+Q: How do I monitor as the things happen?
+A: tail -f <wherever is iflog> or if you use syslog logging, direct
+   log_local0 to a virtual screen (see man 5 syslog.conf)
+
+Q: How do I tell ifcico to poll a node?
+A: Either create an empty .flo or start ifcico with the node address in the
+   command line.
+
+Q: How do I arrange a coninious poll of a node until a successfull session 
+   occurs?
+A: #!/bin/sh
+   while :
+   do
+     if /usr/lib/ifmail/ifcico f123.n456
+     then
+       exit 0
+     fi
+     sleep 30
+   done
+
+Q: How do I send a message with just this specific AKA in the From:?
+A: Either modify your config file to make it primary address, or forge
+   customized "From:" header in the RFC-822 message before feeding it
+   to MTA (or ifmail).
+
+Q: When I run ifunpack (iftoss) packets disapper but nothing is passed 
+   to sendmail/rnews.  What's on?
+A: You probably specified -N.  Your mail/newsbatches are now in
+   /tmp/ifmail directory.
+
+Q: Why doesn't ifmail accept addresses in fido-format (2:283/315.38) ?
+A: Because.
+
+Q: Why do I get a warning about the out-of-date nodelist index so often?
+A: The warning is issued when any of the source nodelists *OR* any of
+   the config files is younger than the index.
+
+Q: When ifcico receives a file request, does it perform a subdirectory
+   seach?
+A: No.  But remember that in UN*X files may have more than one link.
+
+Q: How do I create a file request?
+A: Make an FTS-0006 compatible file in the outbound directory with the
+   name XXXXYYYY.req, where XXXX is a hexadecimal net number, and YYYY
+   is a hexadecimal node number.  In the simplest case, it would contain 
+   just file names (one at a line).
+
+Q: How do I create a file attach?
+A: Either send a mail with the header "X-FTN-FLAGS: ATT" and the file
+   name in the subject (path starting from the `public' directory, and
+   it should be on its place until sent), or put the file name (full
+   path, starting from `/') into the file XXXXYYYY.flo in the outbound
+   directory, where XXXX is a hexadecimal net number, and YYYY is a
+   hexadecimal node number.
+
+Q: How do I specify the "To:" field in the news article to be passed to
+   FidoNet?
+A: Use "X-Comment-To:" header (or simply "Comment-To:")
+
+Q: How do I get rid of the RFC headers converted to that silly kludges
+   in the FidoNet messages?
+A: You cannot.  The author insists on *always* keeping the header
+   information.  There is a Good Reason to keep them, trust me!
+   The root idea of ifmail gateway is that the gateway has no right to
+   drop information that it does not understand.  If you like, think of
+   it as of my religious views.  I am pretty convinced that the best
+   thing you can do with someone other's information that you agreed to
+   carry is to pass it untouched.  If a guy chose to put his telephone
+   number into X-Phone: header, he has a right to have it delivered to
+   the readers, no difference if they are on "this" or "that" side of
+   the gateway.  Of course, there are many and many cases when this
+   requirement is not met.  For example, in the former Soviet Union the
+   KGB thought that it had a right to prelustrate mail (real "paper"
+   mail), and decide if the particular letter should be delivered or
+   not.  That was common practice for international mail.  But you
+   should agree that this is unfair practice.  Another example: open the
+   cowling of your car (or case of your VCR) and remove details which
+   function you do not understand.
+
+Q: But the other sysops are complaing about the unnecessary (for them)
+   load, they will simply kick me out of Fido!
+A: They have no right to do it.  You do not violate any standarts.  You
+   do not violate policy.  So, there is no legal reason for punishment.
+   If they take action against you, complain to the superior
+   coordinator, and you have a good chance to win.
+
+Q: How do I achieve default FidoNet routing - either "direct" or "host",
+   "hub", "zonegate" routing?
+A: Generally, this is MTA's responcibility.  ifroute program, that can
+   be used as a "queryprogram" in Smail, is under development (and very
+   well may stay in this state forever).
+
+Q: When I link ifcico, I get an unresolved reference: yy???.o.  Any hints?
+A: Try adding "-ll" (or "-lfl" if you are using flex) to the LIBS in the
+   CONFIG file.
+
+Q: All articles I receive from my FidoNet uplink are routed back (as I see
+   in the cnews log, and in the cnews "togo" file).  Why?
+A: Because in the cnews "sys" you specified the site name in a format
+   other than recommended "fNNN.nMMM" (or "pLLL.fNNN.nMMM").
+
+Q: Is it possible to to have FidoNet correspondents look like internettes
+   in Internet, i.e. have "From: User.Name@Inter.net.domain" instead of
+   "From: User.Name@pNN.fMM.nLL.zX.something.org"?
+A: In many cases this can be done with the "domtrans" configuration verb.
+
+Q: After calling a Fido node I find these lines in iflog:
+   "tcsetattr(0,TCSADRAIN,clocal) return -1 \n\terrno=5 : I/O error"
+   Should I be worried about these errors?
+A: No.  On some systems, kernel does not allow any tty I/O after hangup,
+   thus preventing ifcico from resetting the modem after call.
+
+Q: On SCO UNIX, ifcico cannot obtain device for dialout.  What's on?
+A: Probably this is a permission problem creating a LCK file: either
+   make /usr/spool/uucp world-writable or make uucico owned by uucp.
+
+Q: The first name and surname of the netmail recipients are always
+   starting with lower case although I enter them with upper case.
+   What's wrong?
+A: Ifmail does not change the case of the recipients name. Probably it
+   is your MTA. In case of sendmail this can be changed by adding the
+   'u' flag to the flag list (F=....) in the definiton of your fido
+   mailer specs (in sendmail.cf).
+
+Q: My fidonet neighbours are complaining about the format on ^aMSGID
+   kludge in my messages.  They ask me to put my FTN address there.
+   Should I do it, and if yes, how?
+A: Probably you should not.  If you do, a single message of Internet
+   origin will get _different_ ^aMDGID's when gatewayed to Fidonet at
+   different gateways, which is incorrect.  Also, the FTS standart says
+   that the ^aMSGID should contain the address of the originating
+   network, which won't be true if the gateway's address is substituted.
+
+Q: When I poll a node, even though the session is competely correct,
+   ifcico considers the call as failed (apparently, there is a problem
+   with a SIGHUP coming too early...).
+A: Some fidonet mailers do not finish Zmodem session cleanly, with ZFIN.
+   If they don't, there is *no* way to distinguish accidental hangup
+   from the session completion.  Ifcico prefers to be suspitions and
+   interpret unclear situation as failure.
+
+Q. I just found a bug in ifmail: when there is only a *.req file in
+   outb, ifcico won't call the destination node.
+A. This is not a bug, this is a feature :-) If you need to poll the node
+   to get a file, create an empty .flo together with a .req.  If you get
+   thru to the node, but it says that it does not support freqs at the
+   moment, the .req file stays in the queue (so you don't need to create
+   it again next time), but the .flo file is deleted (as the session was
+   successfull), so ifcico does not continiously poll the node (which
+   would be annoying).
+
+Q: First I want to say that I read FAQ and know about tty_put status
+   error message :) But... Who can explain me why sometimes ifcico
+   continues writing to the log file during the night and in the morning
+   one can find out that the size of log file is over 300 Mb?
+A: This happens when ifcico does not catch SIGHUP.  That may happen if
+   you have wrong modem setup (AT&C0), or wrong cable (with CD signal
+   always ON), or wrong device management (e.g. old-style getty keeping
+   the serial line open while ifcico tries to use it).
+
+Q: On my Linux XXX, I cannot compile with HAS_NDBM_H because ndbm.h
+   appears to be missing.  Where can I get it?
+A: It seems that some linux distribution has ndbm.h file missing.  Just
+   install it in /usr/include (it can be taken from any gdbm
+   distribution).  Also note that if some distributions ndbm.h is either
+   broken or is from BSD DB rather than gdbm.  You need gdbm, or you
+   should specify -DHAS_BSD_DB and compile with bsd db library.
+
+Q: Will ifmail ever run on MS/DOS?
+A: No.

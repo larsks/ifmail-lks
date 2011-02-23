@@ -1,0 +1,17 @@
+#
+# UNIX TICK-processor (u-tic) area list.
+#
+# The format is obvious:
+# <Area name>
+#
+PNTLIST
+PNT5020
+Z2-DIFF
+USYSLNX
+NET5020
+R50-LIST
+R50ROUTE
+MBLIST
+XOFCFELST
+DFTNAFIX
+FILELIST

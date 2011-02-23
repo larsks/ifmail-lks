@@ -1,0 +1,7 @@
+#
+# UNIX TICK-processor and filefix restricted area list 
+#
+# Format:
+# <area wildcard>		<node wildcard>
+#
+FOOBAR.*			2:5020/118.*

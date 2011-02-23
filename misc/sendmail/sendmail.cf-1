@@ -1,0 +1,22 @@
+# Example for sendmail.cf contributed by Krzysztof Halasa
+# Personally I am not good in sendmail, and I did not try it. =E.C.
+
+######################################
+###   Ruleset 0 -- Parse Address   ###
+######################################
+#[deleted]
+
+#You must define your Fidonet routing here:
+R$*<@$+.fidonet.org.>$*    $#fido $@$2    $:$1<@$2.fidonet.org>$3
+#                 ^^^
+# this dot may be important because of name server behavior
+
+#[deleted]
+
+
+#####################################
+###   FIDO Mailer specification   ###
+#####################################
+
+Mfido, P=/usr/lib/ifmail/ifmail, F=msDFMuC, S=11, R=21, A=ifmail -r $h $u 
+#"-r $h" is required as ifmail requires packet routing address.

@@ -1,0 +1,20 @@
+Copyright (c) 1993-1998 Eugene G. Crosser
+
+utlib is a collection of useful subroutines used in various programs.
+Several modules are taken from INN 1.4 and are subject to INN's
+copyright and distribution policy, others are allowed for free
+distribution and use for any purpose. The INN's modules are: parsedate.c
+gettime.c configdata.h libinn.h clibrary.h macros.h. In the other
+programs, some ideas are taken from "RFmail" package. usleep()
+implementation contributed by Gert Doering <gert@greenie.muc.de>,
+signal() suitable for some BSD-ish systems contributed by Martin Junius
+<mj@dfv.rwth-aachen.de>.
+
+When compiling, specify:
+
+cc ... -I${LIBDIR} ... ${LIBDIR}/utlib.a ...
+
+Compiling utlib programs on some systems (as SCO and ISC) you will need 
+to hack INN's "configdata.h" (and maybe "clibrary.h" too) accordingly.
+Even better, if you have INN installed, just take these files from INN
+source tree (*after* configuring).

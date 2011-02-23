@@ -1,0 +1,26 @@
+--- MMDF fidonet channel by Vitaly Lev
+
+mmdf/*
+
+--- Scripts to run all this without cnews/INN installed by Andrew Chernov
+
+news_via_mail/*
+
+--- ALPHA .tic (fileecho) processor by Cees de Groot
+
+tic/*
+
+--- FrontDoor to ifmail password config file convertor by Christos Ricudis
+
+fdpass/*
+
+--- Proxy to call ifcico on telnet protocol socket (useful when the other
+    side uses VMODEM under OS/2) by Vadim Zaliva
+
+iftelnetd/*
+
+--- AREAS.BBS convertor by rafal wiosna <raf@wiosna.office.polbox.pl>
+
+abbs2nf/*
+
+--- Other miscelaneous scripts

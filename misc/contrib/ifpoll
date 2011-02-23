@@ -1,0 +1,151 @@
+#!/bin/sh
+Ver=0.9h
+# ifpoll, poll my boss node or the node given as argument 1
+#
+# i start this shell script every day by "crond", but you can
+# start it also by hand :) start it as the owner of ifcico.
+# rasca, berlin 1993,97 (Rasca Gmelch, 2:2410/305.4)
+#
+
+# configuration part, change this to reflect your installation
+
+# where "ifcico" and "ifpack" reside
+	FIDOPATH=/usr/local/lib/fnet
+
+# ifcico config file
+#	IFCONFIG=$FIDOPATH/config
+	IFCONFIG=/etc/fido/ifmail.cfg
+
+# logfile of ifcico
+	IFLOG=/var/log/fido/iflog
+
+# where to log processing - file or tty/console
+#	LOGGING=/var/log/fido/ifpoll.log
+	LOGGING=/dev/tty1
+
+# protected inbound directory
+	PINBOUND=`grep ^protinbound $IFCONFIG | cut -c 13-`
+
+# owner of "ifcico"
+	IFCICO_OWNER=uucp
+
+# who should be informed when the calling failed
+	IFCICO_SYSOP=rasca@lupo
+
+# my boss node (default address to poll)
+	NODE="f305.n2410.z2.fidonet.org"
+
+# how often should i try to call NODE?
+	MaxTry=4
+
+# delay between outgoing calls in seconds
+	DELAY=240
+
+# end of configuration part -------------------
+
+
+echo "`date \"+%b %d %T\"` ifpoll[$$]: starting (ifpoll v$Ver)" >> $LOGGING
+
+# remember me, not to run as root..
+#
+if [ `whoami` != "$IFCICO_OWNER" ]; then
+	echo "*** run $0 as the owner of ifcico ***"
+	echo "`date \"+%b %d %T\"` ifpoll[$$]: wrong uid (rc 2)" >> $LOGGING
+	exit 2
+fi
+#
+# argv[1] is the optional node to call
+#
+if [ "$1" != "" ]; then
+	if [ "$1" = "-?" ] || [ "$1" = "-h" ]; then
+		echo -e "\nusage:        ifpoll [<node>]"
+		echo -e "default node: $NODE\n"
+		exit 3
+	else
+		NODE=$1
+	fi
+fi
+#
+# first let's pack the fido stuff..
+#
+$FIDOPATH/ifpack # -I$IFCONFIG
+
+#
+# loop until ifcico could connect the node or MaxTry is encountered
+#
+i=1; errlv=1
+while (expr $i \<= $MaxTry && expr $errlv != 0 ) >/dev/null
+do
+	echo -n "`date \"+%b %d %T\"` ifpoll[$$]: $i. try ($NODE) " >> $LOGGING
+	#
+	# start ifcico in master mode ..
+	#
+	if [ "$NODE" != "-" ]; then
+		$FIDOPATH/ifcico -I$IFCONFIG -r 1 $NODE
+		errlv=$?
+	else
+		errlv=0
+	fi
+	if [ $errlv != "0" ]; then
+		echo "failed" >> $LOGGING
+		if [ $i != $MaxTry ]; then
+			sleep $DELAY
+		fi
+		i=`expr $i + 1`
+	else
+		echo "ok :)" >> $LOGGING
+	fi
+done
+#
+# if the poll was fine, let's unpacking..
+#
+if [ $errlv = "0" ]; then
+	#
+	echo "`date \"+%b %d %T\"` ifpoll[$$]: unpacking.. " >> $LOGGING
+	$FIDOPATH/ifunpack -I$IFCONFIG
+	#
+	if [ $NODE = "f305.n2410.z2.fidonet.org" ] || \
+		[ "$NODE" = "-" ]; then
+		#
+		# do this only when calling my boss node
+		#
+		# adjust the system time
+		# /usr/local/sbin/fnet/trxset >> $LOGGING
+		#
+		if [ -s "$PINBOUND/22410305.lzh" ]; then
+			chmod 644 $PINBOUND/22410305.lzh
+		fi
+		#
+		# nodelist stuff
+		#
+		for pl in 4dpoint.bln pointlst.bln
+		do
+			if [ -s "$PINBOUND/$pl" ]; then
+				mv -f $PINBOUND/$pl /usr/fido/nodelist
+			fi
+		done
+		#
+		cd $PINBOUND && {
+			if find nodediff.a[0-9][0-9] 2> /dev/null
+			then
+				for diff in nodediff.a[0-9][0-9]
+				do
+					arc -ie $diff >> $LOGGING && {
+						mv $diff ../Nodelist/
+					}
+				done
+				nice /usr/local/sbin/fnet/differ.sh >> $LOGGING
+				nice $FIDOPATH/ifindex
+			fi
+		}
+	fi
+else
+	# write me a mail about the failed poll
+	tail --lines=20 $IFLOG | elm -s "ifpoll: failed" $IFCICO_SYSOP >/dev/null
+fi
+
+echo "`date \"+%b %d %T\"` ifpoll[$$]: finished (rc $errlv)" >> $LOGGING
+
+# return the errorlevel of ifcico
+exit $errlv
+

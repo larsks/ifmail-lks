@@ -1,0 +1,12 @@
+#
+# UNIX TICK-processor (u-tic) fileecho list.
+#
+# The format is obvious:
+# <Area name>			<Description>
+#
+MFE.OS2				OS2-related
+PNTLIST				Poinlists
+NODEDIFF			Nodediffs
+FILELIST			BBS filelists
+UUTLLNX				UNIX linux	
+MBLIST				Moscow BBS list

@@ -1,0 +1,35 @@
+ Conversion of areatags to newsgroups (with distribution) and back.
+
+ Lines starting with a whitespace are comments.  This is because
+ areatags may contain a hash ('#') character which would otherwise
+ be sutable as a comment designator.
+
+ AREATAG		newsgroup		distribution
+
+SU.GENERAL		relcom.talk		fido7
+REC.RADIO.SHORTWAVE	rec.radio.shortwave	world
+PVT.SYSOP		general			local
+ALT.FAN.TOLKIEN		alt.fan.tolkien		world
+REC.ARTS.BOOKS.TOLKIEN	rec.arts.books.tolkien	world
+RU.UNIX			fido7.unix		fido7
+FIDO.ANYWHERE		fido7.fido-anywhere	fido7
+
+ Line with a single '*' in the AREATAG field defines default newsgroup
+ and distribution.  '*' in the "newsgroup" field, if present, is expanded
+ to the original areatag (converted to lowcase).
+
+*			junk.*			local
+
+ Line with a single '*' in the "newsgroup" field defines default areatag.
+ '*' in the AREATAG field, if present, is expanded to the original
+ newsgroup (converted to uppercase).  (Distribution is irrelevant).
+
+BAD.*			*
+
+ You can specify a line with a single asterisk in the AREATAG field and
+ a single asterisk in the "newsgroup" field.  It will cause a reversible
+ conversion - areatag will be an uppercased newsgroup, and a newsgroup 
+ will be a lowercased areatag.  This is not recommended (and therefore
+ commented out in this example).
+
+ *			*			world

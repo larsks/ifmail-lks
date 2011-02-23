@@ -1,0 +1,83 @@
+Return-Path: demos!kremvax.demos.su!jm.paco.sfos.ro!tudor
+Received: from demos by pccross.msk.su with uucp
+	(Smail3.1.29.1 #2) id m0sQJnc-0006U3C; Mon, 26 Jun 95 23:26 MSD
+Received: by kremvax.demos.su (uumail v3.1/D); Mon, 26 Jun 1995 16:57:21 +0400
+Received: from root@[193.230.36.1] by kremvax.demos.su with ESMTP id QAA09110;
+  (8.6.9/D) Mon, 26 Jun 1995 16:56:22 +0400
+Received: from paco.paco.sfos.ro (paco.paco.sfos.ro [193.230.36.3]) by palat.pcnet.ro (8.6.11/8.6.9) with ESMTP id QAA06171 for <crosser@pccross.msk.su>; Sun, 25 Jun 1995 16:11:10 +0300
+Received: (from jm@localhost) by paco.paco.sfos.ro (8.6.11/8.6.9) with UUCP id OAA00809 for crosser@pccross.msk.su; Sun, 25 Jun 1995 14:54:37 +0300
+Received: (from tudor@localhost) by jm.paco.sfos.ro (8.6.12/8.6.11) id NAA00781 for crosser@pccross.msk.su; Sun, 25 Jun 1995 13:46:19 +0300
+From: Tudor Bosman <tudor@jm.paco.sfos.ro>
+Message-Id: <199506251046.NAA00781@jm.paco.sfos.ro>
+Subject: ifmail - sendmail patch
+To: crosser@pccross.msk.su
+Date: Sun, 25 Jun 1995 13:46:18 +0300 (EET DST)
+X-Mailer: ELM [version 2.4 PL23]
+Content-Type: text
+Content-Length: 1877      
+
+				Hello !
+
+
+  I have been using ifmail for a while on my Linux box and I found your
+proposed way of patching /etc/sendmail.cf directly quite "non-standard" and
+certainly hard to use for non-gurus. So I wrote a FIDO mailer specification,
+for direct use with sendmail 8.6.10 or higher with the m4 configuration
+files. Here it is, for inclusion in future releases of ifmail (if you
+consider so). Suppose the sendmail files are unpacked in .
+  I am running a UUCP machine only, but adding dns lookup and/or smtp mail
+forwarding should be easy : just start from the linux-smtp.cf file instead
+of linux-uucp.cf, then adjust as needed -- and remove the
+".	uucp-dom:paco" line from the mailertable section of jm.mk.
+  There should be no problem in adding more routing information in jm.mk,
+that is if you are a node in a complex network, not a final Fido point like
+I am.
+
+--- cf/mailer/fido.m4
+
+PUSHDIVERT(-1)
+ifdef(`FIDO_MAILER_PATH',,`define(`FIDO_MAILER_PATH', /usr/local/lib/ifmail/ifmail)')
+
+POPDIVERT
+
+#############################
+# FIDO Mailer specification #
+#############################
+
+Mfido,	P=FIDO_MAILER_PATH, F=msSDFMuC, S=52/31, R=21,
+	A=ifmail $u -r$h
+
+--- cf/cf/jm.mc (my configuration file)
+
+include(`../m4/cf.m4')
+VERSIONID(`linux for setup with uucp which uses domain names')dnl
+OSTYPE(linux)
+FEATURE(nodns)dnl
+FEATURE(always_add_domain)dnl
+MAILER(local)dnl
+MAILER(smtp)dnl
+MAILER(uucp)dnl
+MAILER(fido)dnl
+FEATURE(mailertable)
+
+--- cf/cf/jm.mk (executable to compile the sendmail cf)
+
+#!/bin/sh
+m4 < jm.mc > /etc/sendmail.cf
+cat << EOF > /etc/mailertable
+.fidonet.org	fido:f7.n530.z2.fidonet.org
+.		uucp-dom:paco
+EOF
+makemap hash /etc/mailertable < /etc/mailertable
+ 
+
+Regards,
+  Tudor 
+
+... The champion has retired after eight undefeated victories.
+--
+Tudor Bosman
+phone:   +40 (0)1 653-7086
+E-mail:  tudor@jm.paco.sfos.ro
+FidoNet: Tudor Bosman@2:530/7.77
+

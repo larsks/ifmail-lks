@@ -1,0 +1,25 @@
+Rewrite Zmodem using state machine and avoiding static variables
+
+Write janus, hydra?
+
+Support BSD terminal control
+
+Check available space when receiving
+
+Check if there is mail before calling
+
+Option to generate a gatewayed "reply-to" with a fixed domain
+
+Lock if[un]pack against simultaneous execution
+
+Execute ifunpack when ifcico finishes receiving
+
+Check Xmodem bug
+
+in openfile(), check for the presence of the file in inbound
+
+Change timeout checking in protocols
+
+Move space checking to a separate module
+
+Make system independant file locking (working over NFS)

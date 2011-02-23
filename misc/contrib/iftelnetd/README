@@ -1,0 +1,16 @@
+  Written by:  Vadim Zaliva, lord@crocodile.kiev.ua, 2:463/80
+
+  This software is provided ``as is'' without express or implied warranty.
+  Feel free to distribute it.
+  
+  Feel free to contact me with improovments request
+  and bug reports.
+  
+  Some parts of this code are taken from
+  1. serge terekhov, 2:5000/13@fidonet path for ifmail
+  2. Vadim Kurland, vadim@gu.kiev.ua transl daemon.
+
+Tested with ifmail 2.8c on SGI IRIX 5.3 and Linux.
+Do not forget that this software is still BETA.
+
+Check for latest version ftp::/ftp.topaz.kiev.ua/pub/Unix

@@ -1,0 +1,30 @@
+#!/usr/bin/perl
+
+#Execute: "sumlog iflog"
+#Outputs: address starttime enddtime result (seconds)
+
+while ( <> ) {
+	if (/.* (.*) ([0-9]*) calling/) {
+		#print "start time $1 id $2\n";
+		$str{$2} = $1;
+	}
+	if (/.* (.*) ([0-9]*) call to ([^ ]*) ([^ ]*)/) {
+		#print "end   time $1 id $2\n";
+		if ($st = $str{$2}) {
+			delete $str{$2};
+			$tot=&diff($1,$st);
+			print "$3 $st $1 $4 ($tot)\n";
+		}
+	}
+}
+
+sub diff {
+	local($res);
+	local($h1,$m1,$s1,$h2,$m2,$s2);
+	($h1,$m1,$s1) = split(/:/,@_[0]);
+	($h2,$m2,$s2) = split(/:/,@_[1]);
+	$res = $h1*3600+$m1*60+$s1-$h2*3600-$m2*60-$s2;
+	if ($res < 0) { $res = 86400 + $res; }
+	#print "@_[0] - @_[1] = $res\n";
+	$res;
+}

@@ -1,0 +1,12 @@
+#
+# Processors - How to forward tic files.
+#
+# Note: Extra Data fields:
+#			$1	Full Pathname of file
+#			$2	SystemName
+#			$3	Basename of file
+#
+#		Method		Extra Data
+#
+fido	FIDO		/var/spool/fido/outbound
+uucp	EXEC		uucp $1 $2!~/$3

@@ -1,0 +1,15 @@
+#
+# Uplink configuration
+# uplinks MUST be ordered in ascending "globalness"
+# 
+# <uplink site>:<areafix name>:password:<group list>
+#
+# group list is a-la INN's newsfeeds but ! is unimplemented
+#
+f401.n5020:areafix@ddt.demos.xxx:password1:\
+	fido7.su.*,\
+	fido7.ru.*
+#					
+f400.n5020:areafix@f400.n5020.z2.fidonet.xxx:password2:fido7.*
+#
+radio-msu:gup@radio-msu.xxx:password3:*

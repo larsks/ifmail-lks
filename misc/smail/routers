@@ -1,0 +1,11 @@
+smarthost:	driver=smarthost,transport=uux;
+		path=phreak
+
+uuname:		driver=uuname,transport=uux;
+		cmd=/usr/local/bin/uuname,domain=uucp
+
+pathalias:	driver=pathalias,transport=uux;
+		file=paths,proto=dbm
+
+ifmail:		driver=pathalias,transport=ifmail;
+		file=ftnpaths,proto=lsearch

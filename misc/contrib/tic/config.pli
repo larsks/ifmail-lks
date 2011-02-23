@@ -1,0 +1,73 @@
+#   
+# config.pli	Configuration Data
+#
+#   config.pli,v 1.1 1994/03/19 16:34:44 cg Exp
+#
+#   Filebase - filebase management for Unix systems
+#   Copyright (C) 1993	Cees de Groot
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#   
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+#   You can contact the author
+#   by SnailMail:	Cees de Groot
+#			Ortsstrasse 1a
+#			88718 Daisendorf
+#			Germany
+#   by Phone:            +49 7532 5131
+#   by InternetMail:     de_groot@decus.decus.de
+#   on his Box:          +49 7532 2532 (14k4/V42bis)
+#
+#
+
+#
+# Point to the configuration file
+#
+$ConfigFile = "/home/cg/src/mine/tic/config/Config";
+
+#
+# Subroutine to read the configuration file
+#
+sub ReadConfig {
+	local($PlLine);
+	local($Var);
+	local($Value);
+
+	#
+	# Read the configuration file, ignore comments and empty lines,
+	# evaluate the rest as Perl statements.
+	#
+	open (ConfigFile);
+	while (<ConfigFile>) {
+		/^#/		&& next;
+		/^[ \t]*$/	&& next;
+		chop;
+		($Var, $Value) = split(/[ \t]+/, $_, 2);
+		$PlLine = '$' . $Var . '= "' . $Value . '"';
+		#print "Evaluating \"$PlLine\"\n";
+		eval $PlLine;
+		warn $@ if $@;
+	}
+	close (ConfigFile)
+}
+
+1;
+
+#
+# config.pli,v
+# Revision 1.1  1994/03/19  16:34:44  cg
+# Filebase first version that functions more or less. More a 'backup'
+# commit than a real release...
+#
+#

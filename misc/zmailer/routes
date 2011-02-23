@@ -1,0 +1,19 @@
+#a This *entire* file must be kept sorted (comments included!)
+#b entries in this file are checked first by router.cf. they have the form
+#c	name	channel!next_destination
+#d A leading . on the name indicates that all subdomains match as well
+.f1.n5020.z2.fidonet.org        fnet!f1.n5020.z2.fidonet.org
+.z1.fidonet.org                 fnet!f23.n5020.z2.fidonet.org
+.z2.fidonet.org                 fnet!f23.n5020.z2.fidonet.org
+.z3.fidonet.org                 fnet!f23.n5020.z2.fidonet.org
+.z4.fidonet.org                 fnet!f23.n5020.z2.fidonet.org
+.z5.fidonet.org                 fnet!f23.n5020.z2.fidonet.org
+.z6.fidonet.org                 fnet!f23.n5020.z2.fidonet.org
+.zelax.zgrad.su                 uucpa!zelax
+f230.n5020.z2.fidonet.org       fnet!f230.n5020.z2.fidonet.org
+f7.n464.z2.fidonet.org          fnet!f7.n464.z2.fidonet.org
+p19.f18.n5020.z2.fidonet.org    fneth!p19.f18.n5020.z2.fidonet.org
+p44.f28.n5020.z2.fidonet.org    fneth!p44.f28.n5020.z2.fidonet.org
+p46.f78.n5020.z2.fidonet.org    fneth!p46.f78.n5020.z2.fidonet.org
+pccross                         uucpa!pccross
+pccross.msk.su                  uucpa!pccross

@@ -1,0 +1,9 @@
+uux:		from,received,max_addrs=5,max_chars=200,
+		driver=pipe;
+		pipe_as_sender,
+		cmd="/usr/local/bin/uux - -r -g$grade $host!rmail $((${strip:user})$)"
+
+ifmail:		from,received,max_addrs=5,max_chars=200,
+		driver=pipe;
+		pipe_as_sender,
+		cmd="/usr/local/lib/fnet/ifmail -r$host $((${strip:user})$)"

@@ -1,0 +1,52 @@
+Copyright (c) 1993-1998 by Eugene G. Crosser
+
+This is a README file for ifmail - Internet to FidoNet gateway and
+transport package.
+
+You may do virtually what you wish with this software, as long as the
+explicit reference to its original author is retained:
+
+Eugene G. Crosser <crosser@average.org>, 2:5020/230@FidoNet
+
+THIS SOFTWARE IS PROVIDED AS IS AND COME WITH NO WARRANTY OF ANY KIND,
+EITHER EXPRESSED OR IMPLIED.  IN NO EVENT WILL THE COPYRIGHT HOLDER BE
+LIABLE FOR ANY DAMAGES RESULTING FROM THE USE OF THIS SOFTWARE.
+
+This is freeware.  Except for the modules taken the other packages,
+(which may be subject to different distributing policy), you may use
+this software for any purpose, commercial or noncommercial, including
+even selling it, without paying anything.
+
+The package consists of two major parts: ifgate (gateway programs,
+analog of FidoNet tosser/packer), and ifcico (transport agent, analog of
+FidoNet mailer), each in its own subdirectory.  Routines common to these
+programs are in the iflib subdirectory.  In the top-level subdirectory
+are: README (this file), CONFIG (your system configuration definition)
+and top-level Makefile.  There is also a "misc" subdirectory with
+examples of configuration, some useful scripts, FAQ list etc.
+
+Each of the subdirectories (ifgate, ifcico, iflib and misc) contains its
+own README file, refer to them for more technical details.
+
+To install the package, edit the CONFIG file to match your configuration
+and run "make" and (if you are satisfied) "make install".
+
+There is a mailing list for ifmail-related discussions.  To subscribe,
+send request to: <ifmail-request@online.ru> (this is a SmartList
+program).  Just put a word `subscribe' into subject, message body is
+irrelevant.  Likewise, to unsubscribe, send mail to
+<ifmail-request@online.ru> with a word `unsubscribe' in the subject.
+The HTML-ized archieve of the mailing list is available on the WWW
+at http://www.average.org/ifmail/maillist/
+
+The official home for the package is:
+
+	http://www.average.org/ifmail/
+or
+	ftp://ftp.average.org/pub/ifmail/
+
+
+--
+Eugene G. Crosser <crosser@average.org>; 2:5020/230@fidonet
+Voice: +7 095 214 7492; http://www.average.org/~crosser/
+Moscow, Russia

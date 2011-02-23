@@ -1,0 +1,30 @@
+IMPORTANT!!!
+
+An u-attach.pl utility has been added.
+When using u-tic at heavily loaded node u-tic hanged for many hours
+waiting for .?LO having been unlocked because of it's manner of file processing.
+Now u-tic.pl just links files to fileecho outbound directories,
+and u-attach.pl then tries to attach the files to the downlink
+each time it is started (and leaves the files if the node is locked
+or the .?LO is locked)
+
+--------------
+How to install:
+1. edit MAKE.CONFIG
+2. run 'make world'
+3. edit configuration files
+4. add alias for filefix as |"<path>/queuemail <path to queue dir>"
+   (don't forget that sendmail throws unquoted spaces away)
+5. add u-fix.pl and u-tic.pl and u-attach.pl to fnet's crontab
+
+What u-tic & u-fix can already do:
+	- almost all that U wait from TICK processor and filefix :)
+	- not to waste time by copying files - all file movement
+	  and distribution is implemented with link(2)/rename(2);
+	- to replace files with the same name and their TICKs both
+	  in fileecho outbound directory and .flo;
+	- to preserve comments between records in config files being
+	  modified by u-fix
+
+What it cannot yet do well:
+	- to purge and clean it's filebase 

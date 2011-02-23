@@ -1,0 +1,18 @@
+#
+#
+# Nodes file. Should be protected because the passwords are in here!
+#
+# Everything between 'Node' lines is interpreted as a link of groups.
+#
+#		Node				PW			Groups	Processor
+Node	241:10000/1500  	QWERTY		PF		fido
+	PNOF,AV241,24000,NODEDIFF,FIDONEWS
+#Node	helliconia1			HITHERE		F		uucp
+#	AV241
+#
+# A couple of fake entries to test
+#
+#Node	241:10000/1599		ABCDEF		PF		fido
+#	PNOF
+#Node	241:10000/1598		KJLSHDF		P		uucp
+#	PNOF

@@ -1,0 +1,50 @@
+This directory contains configuration examples and other files related
+to ifmail
+
+--- Misc documentation files
+
+FAQ
+DEBUG
+
+--- Example ifmail configuration files
+
+config
+Areas
+
+--- Example MTA/news agents configuration files
+
+smail/*
+sendmail/*
+zmailer/*
+exim/*
+cnews/*
+inn/*
+
+--- example TCP/IP configuration files
+
+tcp/*
+
+--- Example "magic" file request processor
+
+FILES
+
+--- Contributed scripts and programs
+
+contrib/*
+
+--- some tables to be used as "intab" and "outtab"
+
+inouttabs/*
+
+--- Thanks to beta-testers:
+
+gert@greenie.muc.de (Gert Doering)
+mbravo@tctube.spb.su (Michael Bravo)
+cm@htu.tuwien.ac.at (Christian Mock)
+jan@gondor.gun.de (Jan Niehusmann)
+nikki@dialnet.msk.su (Nikki Chumakov)
+mj@dfv.rwth-aachen.de (Martin Junius)
+eugen@gw.zgik.zaporizhzhe.ua (Eugene Polovnikov)
+rasca@marie.physik.tu-berlin.de (Matthias Gmelch)
+marcs@alive.ersys.edmonton.ab.ca (Marc Slemko)
+and many others.

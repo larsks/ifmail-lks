@@ -1,0 +1,173 @@
+.\" Set up \*(lq, \*(rq if -man hasn't already set it up.
+.if @@\*(lq@ \{\
+.	ds lq "
+.	if t .ds lq ``
+.	if !@@\(lq@ .ds lq "\(lq
+.\}
+.if @@\*(rq@ \{\
+.	ds rq "
+.	if t .ds rq ''
+.	if !@@\(rq@ .ds rq "\(rq
+.\}
+.de Id
+.ds Rv \\$3
+.ds Dt \\$4
+..
+.de Sp
+.if n .sp
+.if t .sp 0.4
+..
+.TH IFMAIL 8 "\*(Dt" "Internet-Fidonet Gateway"
+.UC 4
+.SH NAME
+.B	ifmail
+\- Convert RFC-822 and RFC-1036 mail/news to FTN Fidonet packets.
+.PP
+.B	ifnews
+\- Convert RFC-1036 Usenet news to FTN Fidonet packets.
+.PP
+.br
+.SH Synopsis
+.B	ifmail
+[-h]  [-x verbosity]  [-I file]  [-n]  [-r Address] [-g grade]  receipent ...
+.PP
+.B	ifnews
+[-h]  [-x verbosity]  [-I file]  [-r Address] [-g grade]  [receipent]
+.PP
+.SH Description
+.B Ifmail
+converts RFC-822 compliant mail and RFC-1036 compliant 
+news to FTN packets. It must run setuid owner of fidonet related stuff. 
+The current packet naming is BinkleyTerm, with file/directory names in 
+lowcase. Naming conventions are implemented in a separate source file, 
+pktname.c, to make modifications easier.
+.PP
+The default mode is the mail mode of operation. In mail mode, you must
+specify recepient address(es) on the command line, in the form: 
+.br
+"Eugene.Crosser@p14.f6.n5020.z2.fidonet.org".
+.PP
+The first recepient address is used as the routing address, if no routing
+address is specified.  In news mode then the $NEWSSITE environment 
+variable is used as the routing address.
+.PP
+When the news mode is in effect, (i.e. "-n" key is specified or the 
+program is called by alias "ifnews") a news article (or batch) is
+expected on stdin. 
+.PP
+.B Ifmail 
+will try to preserve as much information as possible 
+in "X-FTN-..." headers and "^ARFC-..." kludges, and restore messages more 
+or less accurately to their original form when double-gatewaying.
+.PP
+A dbm-based alias database is supported, so if a message passes from a
+newsgroup to an echo, the author's free form name and domain address are 
+stored, and when a netmail reply comes from fidonet to that free form name, 
+it is passed as a mail message to the remembered domain address.
+.PP
+.B ATTENTION: 
+This mechanism will not work if you specify fidonet-style
+address as the "visible name" in your MTA.  Do not do it!  Even if you
+don't have an official Internet domain, use something.uucp as your
+primary machine name, NOT fN.nM.zL.fidonet.org.
+.PP
+Several addresses may be specified in the config file, netmail from fidonet 
+addressed to any of those addresses is assumed local and resolved through 
+the aforementioned database, otherwise the mail will be routed through the 
+normal MTA (and presumably packed to some other fidonet node). If there is 
+a "To:" line at the beginning of the fido message, the address is taken from
+it 
+.B (ONLY THE FIRST ADDRESS!).
+.PP
+When an RFC message is split, unique MSGIDs are generated for all parts 
+after the first one. In any case, the original "Message-ID:" header is 
+preserved in the "^ARFC-Message-ID:" kludge and used if the message comes 
+back to usenet on some (other) gateway.
+.PP
+On the way from news to echo, if the node to which the packet is being
+created is present in an "X-FTN-SEEN-BY:" header, the message is not
+included in the packet. SEEN-BY lines in the messages included into
+the packet consist of (1) your node primary address, (2) copy of
+"X-FTN-SEEN-BY:" header(s), (3) ftn addresses that could be parsed
+from the CNews file "$NEWSCTL/log" in the line with the corresponding
+Message-ID. For the latter to work, you should have a Cnews compatible
+log file available for reading and have an "ndbm" package. This works
+with INN too.
+.PP
+.B ATTENTION:
+your feed name in the cnews "sys" file should be fNNN.nMMM or
+pNNN.fMMM.nLLL, without zone and domain, see the examples included
+with the source distribution.
+.PP
+In some cases, though, you will need to specify zone and/or domain of
+the feed, e.g. if you are exporting echomail to several networks.  In
+such case, specify the "cutdown" fNNN.nMMM notation after the slash, to
+prevent exporting back (Refer the your news systems manual).  This trick
+may also be useful if your hub presents non-primary AKA in the echomail 
+it gives you.
+.PP
+.B Ifmail 
+does make some attempt to process file attaches, but only locally.
+Not passing to the Internet and back, but if a fileattach netmail 
+message is routed from one fidonet node to another, it probably will
+take the attached file with it.
+.PP
+There is also a feature to define "forbidden" groups. If a usenet
+message is crossposted to some of the gated groups _and_ to some
+of the forbidden groups it will not be passed to any fidonet echoes.
+Messages with "Control:" headers are also not passed to FidoNet.
+.PP
+.SH OPTIONS
+.B \-h
+	Display a short help message.
+.PP
+.B \-x verbosity
+	Set the debug verbosity
+.B verbosity
+may be a number from 0 to 32 to set 'on' bits from 1 to number, or
+a string of letters where 'a' = bit 1, 'b' = bit 2, etc. up to bit 26.
+.PP
+.B \-I File
+	Use the alternate configuration file
+.B File.
+.PP
+.B \-n
+	Set news mode for processing RFC-1036 Usenet news rather than RFC-822
+electronic mail.
+.PP
+.B \-r Address
+	Route packets to the Fidonet address 
+.B Address.
+.B Address
+should be in the format "[pNN.]fNN.nNN[.zNN[.domain]]".
+.PP
+.B \-g Grade
+	Set the type of Fidonet packet to create.  Where 
+.B Grade
+is one of:
+.br
+	N = Normal (Default)
+.br
+	C = Crash
+.br
+	H = Hold
+.PP
+
+.SH FILES
+.B $IFLIBDIR/config
+	Runtime configuration file.
+.PP
+.SH SEE ALSO
+ifcico(8), ifpack(8), ifunpack(8), iftoss(8)
+.PP
+.SH Acknowledgements
+Some ideas taken from Fidogate/RFmail package, written by Teemu Torma
+and hacked by Martin Junius.  Some modeules taken from INN package.
+Thanks to Michael Bravo <mbravo@tctube.spb.su> (who was the first) and
+many others for testing.
+.PP
+.if t \(co
+1993, 1994 Eugene Crosser
+.PP
+This is free software. You can do what you wish with it
+as long as this copyright notice is preserved.

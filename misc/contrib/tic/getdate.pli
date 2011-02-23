@@ -1,0 +1,61 @@
+#   
+# getdate.pli	-	Get a parseable date back.
+#
+#   getdate.pli,v 1.1 1994/03/19 16:34:46 cg Exp
+#
+#   Filebase - filebase management for Unix systems
+#   Copyright (C) 1994	Cees de Groot
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#   
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+#   You can contact the author
+#   by SnailMail:	Cees de Groot
+#			Ortsstrasse 1a
+#			88718 Daisendorf
+#			Germany
+#   by Phone:            +49 7532 5131
+#   by InternetMail:     de_groot@decus.decus.de
+#   on his Box:          +49 7532 2532 (14k4/V42bis)
+#
+#
+
+
+#
+# This module contains the routine GetDate, which will leave the
+# current date in $GetDate, in the format:
+#	Day, DD Mon YY HH:MM:SS GMT
+#
+
+sub GetDate {
+	local(@Days) = ("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+	local(@Months) = ("XXX", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+							"Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+	local(@FillTwo) = ('00'..'99');
+	local($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = 
+		gmtime(time());
+
+	$GetDate = "$Days[$wday], $FillTwo[$mday] $Months[$mon] $year " .
+			   "$FillTwo[$hour]:$FillTwo[$min]:$FillTwo[$sec] GMT";
+}
+
+1;
+
+#
+# getdate.pli,v
+# Revision 1.1  1994/03/19  16:34:46  cg
+# Filebase first version that functions more or less. More a 'backup'
+# commit than a real release...
+#
+#

@@ -1,0 +1,8 @@
+# gateway to FidoNet (ifmail)
+#
+f6.n5020:fido7/all:f:
+f103.n5020:alt.fan.tolkien,rec.arts.books.tolkien/all:f:
+#
+# if you are on another network, say, "othernet" with zone 69:
+#
+f88.n77.z69.othernet/f88.n77:othernet.sysop,comp.sys.ibmpc/all:f:

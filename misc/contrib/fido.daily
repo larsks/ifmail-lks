@@ -1,0 +1,261 @@
+Return-Path: phreak!demos!kremvax.demos.su!educom2.fct.unl.pt!px
+Received: from phreak by pccross.msk.su with uucp
+	(Smail3.1.29.1 #2) id m0s1Itd-0006NgC; Tue, 18 Apr 95 23:25 MSD
+Received: by phreak.demos.su; Tue, 18 Apr 1995 18:30:32 +0400
+Received: by kremvax.demos.su; Tue, 18 Apr 1995 18:28:14 +0400
+Received: from root@isolde.fct.unl.pt [192.68.178.191] by kremvax.demos.su with SMTP id SAA14524;
+  (8.6.9/D) Tue, 18 Apr 1995 18:26:52 +0400
+Received: from laminaria.fct.unl.pt by isolde.fct.unl.pt with SMTP id AA20480
+  (5.65c/IDA-1.4.4 for <crosser@pccross.msk.su>); Tue, 18 Apr 1995 15:47:16 +0200
+Received: from educom2.fct.unl.pt by laminaria.fct.unl.pt (AIX 3.2/UCB 5.64/4.03)
+          id AA14367; Tue, 18 Apr 1995 15:18:18 +0200
+Received: by educom2.fct.unl.pt (5.51/6.2); Tue, 18 Apr 95 14:23:27 GMT
+From: "Joaquim Baptista - DI [pxquim]" <px@educom2.fct.unl.pt>
+Message-Id: <9504181523.AA10741@educom2.fct.unl.pt>
+To: Eugene Crosser <crosser@pccross.msk.su>, ifmail@jadpc.jd.com
+Cc: px@fct.unl.pt
+Subject: fido.daily v1.1, resume your ifcico, iftoss, ifmail, and ifnews logs
+Date: Mon, 06 Feb 95 12:21:07 +0100
+
+
+Greetings,
+
+Some of you may remember my previous post of "fido.daily", a perl script
+to resume ifmail logs.
+
+I received a request to restrict the nodes being processed; I added a
+"-s pattern" option which should allow you to select just one node or
+one network.  Use "-s 2:362/" to select the net 2:362, for instance.
+
+I also received a bug report.  Sometimes a node is reported as 2:362/42,
+other times as 2:362/42@fidonet, and this confused the script.  I now
+strip the "@net" part to solve the problem.  It would be nicer to add
+it, but that is not always possible.
+
+To better support the automatic generation of reports, I now include the
+period being reported on the log.  This shows what is being reported in
+the event of failures, such as a failure to rotate the logs due to a machine
+being down, and causing the recounting of partial logs.
+
+It will warn you if a message is not tossed because its area is not
+configured.  It probably should detect other exceptional situations.
+Suggestions for such situations are welcome (actual log lines would
+be best).
+
+It's been a while since I changed it, so I am releasing the current
+version as version 1.1.
+
+I place the fido.daily script on the public domain, but I ask that, if
+you do any significant improvement, that you consider sending the
+improvements to me so that I can mantain a reference version.
+Suggestions for improvements are also welcome.
+
+In this message I include a sample output produced by the script, the
+fido.daily script itself, and a "rotate-logs" shell script that I
+addapted from code floating on the net.  I invoke this last script
+daily from cron.
+
+----BEGIN sample output --
+Report period:
+  From  Apr 10 03:34:03
+  To    Apr 18 02:59:57
+
+Trafic by system (ifcico):
+Attempts Busy NoCa Conn   Time   Received    Sent   System
+    314   90    1   20    6:58      472Kb     0Kb   16:16000/0
+    216    1    1   26   11:12      904Kb     7Kb   2:362/1006
+    269  119   13   18    0:15       15Kb     0Kb   2:362/8
+
+
+Messages received by system (iftoss):
+Echomail Netmail  Route
+    796       0   16:16000/0
+   2119       0   2:362/10
+     23       0   2:362/8
+
+
+Messages sent by system (ifnews+ifmail):
+Echomail Netmail  Route
+      1       0   16:16000/0
+     11       0   362/10
+----END sample output --
+
+
+----BEGIN fido.daily --
+#!/usr/local/bin/perl
+#
+# fido.daily -- resume your ifcico, iftoss, ifmail, and ifnews logs
+#
+# by Joaquim Baptista, px@fct.unl.pt
+#
+# Placed on the public domain.  If you make significant improvements on
+# this script, please send them to me so that I can mantain a "reference"
+# version.  This script works with ifmail28; future versions may break it.
+#
+# Example usage from cron, before rotating the logs:
+#     fido.daily iflog | mail -s 'Daily Fidonet report' sysop
+#
+# v1.1 -- Ignore "@somenet" in addresses like "2:362/42@fidonet" to avoid
+#         multiple entries for the same node.  Add -s option to select
+#         nodes.  Avoid dupplicate lines in the table of messages sent.
+#         Add report of period covered.
+#
+# v1.0 -- First release
+
+require "getopts.pl";
+&Getopts("s:") || die "usage: $0 [-s pattern] [file...]\n";
+if ($opt_s ne "") { $opt_s =~ s/([^a-zA-Z0-9\s])/\\$1/g; }
+
+$first="zzz 99";
+$last= "      ";
+while (<>) {
+  if (/^([A-Z][a-z][a-z] [ \d]\d )/) {
+    $date= substr($_,0,15);
+    if ($date lt $first) { $first=$date; }
+    if ($last lt $date ) { $last=$date; }
+  }
+
+  if    (/ifcico\[(\d+)\]: calling\s+([^\s@]+)/ ) {
+    $call{$1}=$2;
+    $attempts{$2}++;
+  }
+  elsif (/ifcico\[(\d+)\]: chat got "CONNECT"/) {
+    $conn{$call{$1}}++;
+  }
+  elsif (/ifcico\[(\d+)\]: chat got "BUSY"/) {
+    $busy{$call{$1}}++;
+  }
+  elsif (/ifcico\[(\d+)\]: chat got "NO CARRIER"/) {
+    $noca{$call{$1}}++;
+  }
+  elsif (/ifcico\[(\d+)\]: received (\d+) bytes in (\d+)/) {
+    $bytes_rcvd{$call{$1}} += $2;
+    $seconds_rcvd{$call{$1}} += $3;
+  }
+  elsif (/ifcico\[(\d+)\]: sent (\d+) bytes in (\d+)/) {
+    $bytes_sent{$call{$1}} += $2;
+    $seconds_sent{$call{$1}} += $3;
+  }
+  elsif (/iftoss\[(\d+)\]: packet from node ([^\s@]+)/) {
+    $toss{$1}= $2;
+  }
+  elsif (/iftoss\[(\d+)\]: No newsgroup for area tag (\S+)/) {
+    $toss_area{$2}++;
+  }
+  elsif (/iftoss\[(\d+)\]: end (\d+) echomail, (\d+)/) {
+    $tosskeys{$toss{$1}} ++;
+    $echomail{$toss{$1}} += $2;
+    $netmail{$toss{$1}}  += $3;
+  }
+  elsif (/ifmail\[(\d+)\]: route: ([^\s@]+)/) {
+    $ifmail{$2}++;
+  }
+  elsif (/ifnews\[(\d+)\]: route: ([^\s@]+)/) {
+    $ifnews{$2}++;
+} }
+
+print "Report period:\n  From  $first\n  To    $last\n\n";
+
+print "Trafic by system (ifcico):\n";
+print "Attempts Busy NoCa Conn   Time   Received    Sent   System\n";
+for $s (sort keys %attempts) {
+  next  if  ($opt_s ne "") && ($s !~ /$opt_s/o);
+  printf("%7d  %3d  %3d  %3d %s   %6dKb  %4dKb   %s\n",
+         $attempts{$s}, $busy{$s}, $noca{$s}, $conn{$s},
+         &mmss($seconds_rcvd{$s}+$seconds_sent{$s}),
+         $bytes_rcvd{$s}/1024, $bytes_sent{$s}/1024, $s);
+}
+
+print "\n\nMessages received by system (iftoss):\nEchomail Netmail  Route\n";
+for $s (sort keys %tosskeys) {
+  next  if  ($opt_s ne "") && ($s !~ /$opt_s/o);
+  printf("%7d %7d   %s\n", $echomail{$s}, $netmail{$s}, $s);
+}
+
+print "\n\nMessages sent by system (ifnews+ifmail):\nEchomail Netmail  Route\n";
+%aux=(%ifmail, %ifnews);
+for $s (sort (keys %aux)) {
+  next  if  ($opt_s ne "") && ($s !~ /$opt_s/o);
+  printf("%7d %7d   %s\n", $ifnews{$s}, $ifmail{$s}, $s);
+}
+
+if (%toss_area) {
+  print "\n\nMessages not tossed for lack of area tag (iftoss):\nNumber  Area tag\n";
+  for $a (sort keys %toss_area) {
+    printf("%5d    %s\n", $toss_area{$a}, $a);
+} }
+
+exit 0;
+
+sub mmss {
+  local($s)= @_;
+  sprintf("%4d:%2.2d", $s/60, $s-int($s/60)*60);
+}
+----END fido.daily --
+
+----BEGIN rotate-logs --
+#!/bin/sh
+
+# Script to rotate syslog files. Run from cron, every day or weekend.
+
+LOGDIR=/usr/adm/fido            # log file directory
+OLDDIR=${LOGDIR}/OLD
+LOGPERM=0660                    # log file permissions
+
+LOG1=iflog
+LOG2=ifdebug
+LOG3=rnews
+
+LOG1OWN=fido.uucp               # log file ownership
+LOG2OWN=fido.uucp               # log file ownership
+LOG3OWN=news.news               # log file ownership
+
+# But first, generate some statistics...
+
+TMP=/tmp/fido.$$
+echo To: jcf, jpa, px > $TMP
+echo Subject: Daily Fidonet report >> $TMP
+echo "" >> $TMP
+perl /usr/local/lib/fido/fido.daily ${LOGDIR}/${LOG1} >> $TMP
+/usr/lib/sendmail -t < $TMP && rm $TMP
+
+
+test -f ${OLDDIR}/${LOG1}.6 && mv ${OLDDIR}/${LOG1}.6  ${OLDDIR}/${LOG1}.7
+test -f ${OLDDIR}/${LOG1}.5 && mv ${OLDDIR}/${LOG1}.5  ${OLDDIR}/${LOG1}.6
+test -f ${OLDDIR}/${LOG1}.4 && mv ${OLDDIR}/${LOG1}.4  ${OLDDIR}/${LOG1}.5
+test -f ${OLDDIR}/${LOG1}.3 && mv ${OLDDIR}/${LOG1}.3  ${OLDDIR}/${LOG1}.4
+test -f ${OLDDIR}/${LOG1}.2 && mv ${OLDDIR}/${LOG1}.2  ${OLDDIR}/${LOG1}.3
+test -f ${OLDDIR}/${LOG1}.1 && mv ${OLDDIR}/${LOG1}.1  ${OLDDIR}/${LOG1}.2
+test -f ${OLDDIR}/${LOG1}.0 && mv ${OLDDIR}/${LOG1}.0  ${OLDDIR}/${LOG1}.1
+test -f ${LOGDIR}/${LOG1}   && mv ${LOGDIR}/${LOG1}    ${OLDDIR}/${LOG1}.0
+
+test -f ${OLDDIR}/${LOG2}.6 && mv ${OLDDIR}/${LOG2}.6  ${OLDDIR}/${LOG2}.7
+test -f ${OLDDIR}/${LOG2}.5 && mv ${OLDDIR}/${LOG2}.5  ${OLDDIR}/${LOG2}.6
+test -f ${OLDDIR}/${LOG2}.4 && mv ${OLDDIR}/${LOG2}.4  ${OLDDIR}/${LOG2}.5
+test -f ${OLDDIR}/${LOG2}.3 && mv ${OLDDIR}/${LOG2}.3  ${OLDDIR}/${LOG2}.4
+test -f ${OLDDIR}/${LOG2}.2 && mv ${OLDDIR}/${LOG2}.2  ${OLDDIR}/${LOG2}.3
+test -f ${OLDDIR}/${LOG2}.1 && mv ${OLDDIR}/${LOG2}.1  ${OLDDIR}/${LOG2}.2
+test -f ${OLDDIR}/${LOG2}.0 && mv ${OLDDIR}/${LOG2}.0  ${OLDDIR}/${LOG2}.1
+test -f ${LOGDIR}/${LOG2}   && mv ${LOGDIR}/${LOG2}    ${OLDDIR}/${LOG2}.0
+
+test -f ${OLDDIR}/${LOG3}.6 && mv ${OLDDIR}/${LOG3}.6  ${OLDDIR}/${LOG3}.7
+test -f ${OLDDIR}/${LOG3}.5 && mv ${OLDDIR}/${LOG3}.5  ${OLDDIR}/${LOG3}.6
+test -f ${OLDDIR}/${LOG3}.4 && mv ${OLDDIR}/${LOG3}.4  ${OLDDIR}/${LOG3}.5
+test -f ${OLDDIR}/${LOG3}.3 && mv ${OLDDIR}/${LOG3}.3  ${OLDDIR}/${LOG3}.4
+test -f ${OLDDIR}/${LOG3}.2 && mv ${OLDDIR}/${LOG3}.2  ${OLDDIR}/${LOG3}.3
+test -f ${OLDDIR}/${LOG3}.1 && mv ${OLDDIR}/${LOG3}.1  ${OLDDIR}/${LOG3}.2
+test -f ${OLDDIR}/${LOG3}.0 && mv ${OLDDIR}/${LOG3}.0  ${OLDDIR}/${LOG3}.1
+test -f ${LOGDIR}/${LOG3}   && mv ${LOGDIR}/${LOG3}    ${OLDDIR}/${LOG3}.0
+
+cp /dev/null ${LOG1}
+chmod ${LOGPERM} ${LOG1}
+/usr/local/bin/chown ${LOG1OWN} ${LOG1}
+
+cp /dev/null ${LOG2}
+chmod ${LOGPERM} ${LOG2}
+/usr/local/bin/chown ${LOG2OWN} ${LOG2}
+
+cp /dev/null ${LOG3}
+chmod ${LOGPERM} ${LOG3}
+/usr/local/bin/chown ${LOG3OWN} ${LOG3}
+----END rotate-logs --

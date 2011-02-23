@@ -1,0 +1,112 @@
+Return-Path: srcc!gw!jadpc.jd.com!ifmail
+Received: from srcc by pccross.msk.su with uucp
+	(Smail3.1.29.1 #2) id m0sHcLD-0006Tga; Fri, 2 Jun 95 23:25 MSD
+Received: by gamma.srcc.msu.su; Fri,  2 Jun 1995 21:09:16 +0400
+Received: from jadpc.jd.com (jadpc.nosc.mil [128.49.236.12]) by gw.srcc.msu.su (8.6.12/8.6.12) with SMTP id VAA09782; Fri, 2 Jun 1995 21:08:17 +0400
+Received: from jadpc by jadpc.jd.com with smtp
+        (Smail3.1.29.1 #21) id m0sHZgC-0001Nya; Fri, 2 Jun 95 09:34 PDT
+Date: Fri, 2 Jun 95 09:34 PDT
+Message-Id: <199506021632.CAA27880@asstdc.scgt.oz.au>
+Errors-To: jdeitch@jadpc.jd.com
+Reply-To: imb@scgt.oz.au
+Originator: ifmail@jadpc.jd.com
+Sender: ifmail@jadpc.jd.com
+Precedence: bulk
+From: michael butler <imb@scgt.oz.au>
+To: ifmail@jadpc.jd.com
+Subject: Re: ifmail/sendmail/UUCP
+X-Comment: This is the ifmail mailing list
+
+Ian S. White writes:
+
+> If there is somebody who is running the above combination successfullly, I
+> would very much appreciate it if you could send me all of the relevant
+> configuration. The docs for everything are very limiting, and i can get
+> sendmail and ifmail to work, or sendmail and uucp, but I can't get both.
+> help!
+
+My O/S configuration is probably not the same as yours (I run FreeBSD
+-current) but, with sendmail 8.6.12, I highly recommend that you use the
+"m4" files to generate sendmail.cf .. it works and it's comprehensible (for
+a nice change :-)).
+
+I created an ".mc" file (in sendmail/cf/cf) containing ..
+
+divert(-1)
+#
+# Copyright (c) 1983 Eric P. Allman
+# Copyright (c) 1988, 1993
+#       The Regents of the University of California.  All rights reserved.
+#
+
+ [ .. more copyright stuff .. ]
+
+#
+include(`../m4/cf.m4')
+VERSIONID(`$Id$')
+OSTYPE(bsd4.4)
+MASQUERADE_AS(scgt.oz.au)dnl
+FEATURE(notsticky)dnl
+define(`UUCP_MAX_SIZE', 2000000)
+define(`FIDO_MAX_SIZE', 12000)
+define(`confCW_FILE', /etc/sendmail.cw)
+define(`confMIME_FORMAT_ERRORS', False)
+define(`confCOPY_ERRORS_TO', postmaster)
+define(`confMCI_CACHE_SIZE', 4)
+FEATURE(use_cw_file)
+FEATURE(always_add_domain)
+define(`UUCP_RELAY', `uunet.uu.net')
+define(`BITNET_RELAY', `bitnet.mailgate.cs.mu.oz.au')
+define(`LOCAL_MAILER_PATH', /usr/local/bin/procmail)
+define(`LOCAL_MAILER_ARGS', `procmail -d $u')
+define(`UUCP_MAILER_ARGS', `uux - -r -z -a$f. $h!rmail ($u)')dnl
+MAILER(`local')
+MAILER(`smtp')
+MAILER(`uucp')
+MAILER(`ifmail')
+FEATURE(mailertable)
+SITECONFIG(`uucp.asstdc', `asstdc', `U')
+LOCAL_RULE_3
+UUCPSMTP(techpac, techpac.com.au)
+UUCPSMTP(kate, kate.asstdc.com.au)
+UUCPSMTP(eagle, eagle.asstdc.com.au)
+UUCPSMTP(mcc, mcc.com.au)
+UUCPSMTP(active, active.asstdc.com.au)
+UUCPSMTP(matp, matp.asstdc.com.au)
+UUCPSMTP(speakezy, speakezy.asstdc.com.au)
+UUCPSMTP(bbs, bbs.asstdc.com.au)
+LOCAL_RULE_0
+R$+ < @ eagle . asstdc . com . au . >   $#uucp $@ eagle $: $1
+R$+ < @ bbs . asstdc . com . au . >     $#uucp $@ bbs $: $1
+
+ .. then, under sendmail/cf/mailer, a file called "ifmail.m4" and fleshed
+out from uucp.m4, as follows ..
+
+PUSHDIVERT(-1)
+#
+
+ifdef(`FIDO_MAILER_PATH',, `define(`FIDO_MAILER_PATH', /usr/local/lib/fnet/ifmail)')
+ifdef(`FIDO_MAILER_ARGS',, `define(`FIDO_MAILER_ARGS', `ifmail -r $h $u')')
+ifdef(`FIDO_MAILER_FLAGS',, `define(`FIDO_MAILER_FLAGS', `')')
+ifdef(`FIDO_MAX_SIZE',, `define(`FIDO_MAX_SIZE', 100000)')
+POPDIVERT
+
+ifdef(`_MAILER_smtp_',
+`# domain-ized FIDO mailer
+Mfido,          P=FIDO_MAILER_PATH, F=CONCAT(mDFMhu, FIDO_MAILER_FLAGS), S=52/31, R=ifdef(`_ALL_MASQUERADE_', `11/31', `21'),
+                A=FIDO_MAILER_ARGS
+Mrfido,         P=FIDO_MAILER_PATH, F=CONCAT(mDFMhu, FIDO_MAILER_FLAGS), S=52/31, R=ifdef(`_ALL_MASQUERADE_', `11/31', `21'),M=FIDO_MAX_SIZE,
+                A=FIDO_MAILER_ARGS')
+
+ .. and, under sendmail/cf/siteconfig, a file called "uucp.asstdc.m4"
+looking like ..
+
+SITE(techpac kate eagle active)
+SITE(matp mcc speakezy bbs)
+
+ .. now you probably may not need procmail but you can probably prune it
+down from there. With Taylor UUCP, you MUST have config files (/etc/uucp/sys
+in particular) that matches sendmail or else _strange_ things start to
+happen .. none of them desirable,
+
+        michael

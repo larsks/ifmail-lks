@@ -1,0 +1,10 @@
+#
+# Trigger		Triggers for special files
+#
+# Comments:
+#	'X' in Area means: don't care.
+#
+#Filename				Area		Trigger
+#
+....diff.[a-z][0-9][0-9]	X		/usr/fido/bin/copy_diff $1
+fidonews.*				FIDONEWS	mail -s "Fidonews arrived" cg

@@ -1,0 +1,4 @@
+#
+fido		60179/tcp	# For ifmail connections
+tfido		60177/tcp	# For VMODEM connections
+#

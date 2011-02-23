@@ -1,0 +1,66 @@
+#!/bin/sh
+
+# Check if we got a fresh nodediff, unpack and apply it and rebuild index.
+
+INB=/var/spool/ifmail/inb
+NLDIR=/var/spool/ifmail/nodelist
+UNPACKER="/usr/bin/unzip -o"
+PATCHER=/usr/lib/ifmail/nlpatch
+INDEXER=/usr/lib/ifmail/ifindex
+NLMASK='z2-list*'
+NDMASK='z2-diff*'
+
+if cd ${INB} ; then
+	DIFF=`ls ${NDMASK}`
+	if [ ! -f ${NDMASK} ] ; then
+		echo No diff file
+		exit 0
+	fi
+else
+	echo Cannot chdir to ${INB}
+	exit 1
+fi
+
+echo Processing ${DIFF}
+
+if cd ${NLDIR} ; then
+	if cp ${INB}/${DIFF} . ; then
+		rm -f ${INB}/${DIFF}
+	else
+		echo Cannot copy ${INB}/${DIFF} to ${NLDIR}
+		exit 1
+	fi
+else
+	echo Cannot chdir to ${NLDIR}
+	exit 1
+fi
+
+if ${UNPACKER} ${DIFF} ; then
+	rm -f ${DIFF}
+	DIFF=`ls ${NDMASK}`
+else
+	echo Could not unpack ${DIFF}
+	exit 1
+fi
+
+if [ ! -f ${DIFF} ] ; then
+	echo Nodediff was unpacked to unknown name
+	exit 1
+fi
+
+NLIST=`ls ${NLMASK}`
+
+if [ ! -f ${NLIST} ] ; then
+	echo Nodediff was unpacked to unknown name
+	exit 1
+fi
+
+echo applying ${DIFF} to ${NLIST}
+
+if ${PATCHER} ${NLIST} ${DIFF} ; then
+	rm -f ${NLIST} ${DIFF}
+	exec ${INDEXER}
+else
+	echo Error compiling new nodelist
+	exit 1
+fi

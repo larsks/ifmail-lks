@@ -1,0 +1,39 @@
+   1. Subscribing/unsubscribing
+
+[+]<area name pattern>
+ Subscribe to all areas that match the pattern
+
+-<area name pattern>
+ Unsubscribe from all areas that match the pattern
+
+You may use '*' symbol in the patterns.
+
+   2. Control/info commands
+
+1) %HELP - get this message :)
+
+2) %LIST - get the list of areas present on our node
+
+3) %QUERY 
+   %LINKED   - get your subscription list
+
+4) %UNLINKED - get the list of echoes that you are NOT subscribed to
+
+5) %PASSIVE
+   %PAUSE   - make your subscription passive. It means that you will
+	      receive no echoes until you send %ACTIVE command, but 
+	      you do not loose your subscription list on our node
+
+6) %ACTIVE
+   %RESUME - make your subscription active. You will get echoes again
+
+7) %SEND <file> - attach file 'file' from filebase to you. Note that
+                  your boss may have filebase support disabled
+
+8) %PASSWD <passwd> - set your password to 'passwd'
+
+9) %ANNOUNCE {ON|OFF} - whether to send you mails about new files in
+                        the areas unlinked from you
+10) %QUIT - stop processing your message and skip everything below the
+            line
+
