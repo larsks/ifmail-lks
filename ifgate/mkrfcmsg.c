@@ -270,7 +270,8 @@ rfcmsg *kmsg;
 			if (*(p=buf+strlen(buf)-1) == '\n') *p='\0';
 		}
 		else sprintf(buf,"%s",ascinode(t,0x7f));
-		substitute(buf);
+		//LKS -- let's let the mail system make these decisions.
+		//substitute(buf);
 		loginf("mail from %s to %s",ascfnode(f,0x7f),buf);
 	}
 
