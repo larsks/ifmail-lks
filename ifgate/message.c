@@ -18,6 +18,8 @@
 #define MAXSEEN 70
 #define MAXPATH 73
 
+int suppress_received = 0;
+
 extern time_t now;
 extern int newsmode;
 extern char *replyaddr;
@@ -53,7 +55,7 @@ rfcmsg *msg;
 	if (!strcasecmp(msg->key,"Xref")) return 0;
 	if (!strcasecmp(msg->key,"Approved")) return newsmode?0:2;
 	if (!strcasecmp(msg->key,"Return-Receipt-To")) return 1;
-	if (!strcasecmp(msg->key,"Received")) return newsmode?0:2;
+       if (!strcasecmp(msg->key,"Received")) return newsmode?0:(suppress_received?0:2);
 	if (!strcasecmp(msg->key,"From")) return ftnorigin?0:2;
 	if (!strcasecmp(msg->key,"To"))
 	{

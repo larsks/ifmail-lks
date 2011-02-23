@@ -24,6 +24,7 @@
 #include "hash.h"
 
 extern int newsmode;
+extern int suppress_received;
 extern char *configname;
 extern char passwd[];
 
@@ -85,7 +86,7 @@ char *argv[];
 
 	setmyname(argv[0]);
 	catch(myname);
-	while ((c=getopt(argc,argv,"g:r:x:I:nNho")) != -1)
+       while ((c=getopt(argc,argv,"g:r:x:I:RnNho")) != -1)
 	if (confopt(c,optarg)) switch (c)
 	{
 		case 'N':	fakeoutbound=1; break;
@@ -103,6 +104,7 @@ char *argv[];
 				break;
 		case 'r':	routec=optarg; break;
 		case 'n':	newsmode=1; break;
+               case 'R':       suppress_received=1; break;
 		default:	usage(); exit(EX_USAGE);
 	}
 
