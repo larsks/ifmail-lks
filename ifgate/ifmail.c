@@ -24,7 +24,7 @@
 #include "hash.h"
 
 extern int newsmode;
-extern int suppress_received;
+extern int suppress_rfc;
 extern char *configname;
 extern char passwd[];
 
@@ -104,7 +104,7 @@ char *argv[];
 				break;
 		case 'r':	routec=optarg; break;
 		case 'n':	newsmode=1; break;
-               case 'R':       suppress_received=1; break;
+               case 'R':       suppress_rfc=1; break;
 		default:	usage(); exit(EX_USAGE);
 	}
 

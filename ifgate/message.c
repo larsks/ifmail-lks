@@ -18,7 +18,7 @@
 #define MAXSEEN 70
 #define MAXPATH 73
 
-int suppress_received = 0;
+int suppress_rfc = 0;
 
 extern time_t now;
 extern int newsmode;
@@ -47,6 +47,12 @@ rfcmsg *msg;
 
 	/* 0-junk, 1-kludge, 2-pass */
 
+	if (!strcasecmp(msg->key,"Message-ID")) return ftnorigin?0:1;
+	if (!strcasecmp(msg->key,"References")) return removeref?0:1;
+
+	if (suppress_rfc)
+		return 0;
+
 	if (!strcasecmp(msg->key,"X-UUCP-From")) return 0;
 	if (!strcasecmp(msg->key,"X-Body-Start")) return 0;
 	if (!strncasecmp(msg->key,"X-FTN-",6)) return 0;
@@ -55,7 +61,7 @@ rfcmsg *msg;
 	if (!strcasecmp(msg->key,"Xref")) return 0;
 	if (!strcasecmp(msg->key,"Approved")) return newsmode?0:2;
 	if (!strcasecmp(msg->key,"Return-Receipt-To")) return 1;
-       if (!strcasecmp(msg->key,"Received")) return newsmode?0:(suppress_received?0:2);
+        if (!strcasecmp(msg->key,"Received")) return newsmode?0:2;
 	if (!strcasecmp(msg->key,"From")) return ftnorigin?0:2;
 	if (!strcasecmp(msg->key,"To"))
 	{
@@ -88,8 +94,6 @@ rfcmsg *msg;
 	if (!strcasecmp(msg->key,"Content-Transfer-Encoding")) return removemime?0:1;
 	if (!strcasecmp(msg->key,"Content-Name")) return 2;
 	if (!strcasecmp(msg->key,"Content-Description")) return 2;
-	if (!strcasecmp(msg->key,"Message-ID")) return ftnorigin?0:1;
-	if (!strcasecmp(msg->key,"References")) return removeref?0:1;
 	if (!strcasecmp(msg->key,"Distribution")) return ftnorigin?0:1;
 	/*if (!strcasecmp(msg->key,"")) return ;*/
 	return 1;
