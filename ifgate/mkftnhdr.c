@@ -247,7 +247,8 @@ rfcmsg *msg;
 	if (*freename == '\0') freename=rfcfrom;
 
 	if (newsmode) debug(3,"FROM: %s <%s>",freename,rfcfrom);
-	else loginf("from: %s <%s>",freename,rfcfrom);
+	else loginf("from: %s <%s>",freename ? freename : "NULL",
+			rfcfrom ? rfcfrom : "NULL");
 
 	needreplyaddr=1;
 	if ((tmsg->from=parsefaddr(rfcfrom)) == NULL)
